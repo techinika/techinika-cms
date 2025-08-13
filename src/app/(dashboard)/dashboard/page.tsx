@@ -1,10 +1,10 @@
-import LoginPage from "@/components/pages/LoginPage";
+import DashboardPage from "@/components/pages/DashboardPage";
 import React from "react";
 
 function page() {
   return (
     <div>
-      <LoginPage />
+      <DashboardPage />
     </div>
   );
 }
