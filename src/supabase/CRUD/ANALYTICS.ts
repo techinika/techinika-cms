@@ -24,7 +24,7 @@ export async function fetchDashboardAnalytics() {
     // Fetch recent articles
     const { data: recentArticles, error: recentArticlesError } = await supabase
       .from("articles")
-      .select("id, title, views, status")
+      .select("slug, title, views, status")
       .order("created_at", { ascending: false })
       .limit(5);
 

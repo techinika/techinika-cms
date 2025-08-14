@@ -23,6 +23,8 @@ export type Article = {
   category_id: string;
   summary: string;
   tags: string;
+  views: number;
+  status: "draft" | "published" | "archived";
   content: string;
   table_of_contents?: TableOfContentsItem[]; // The table of contents is optional
   read_time: string; // The read time is a string, e.g., "4 min read"

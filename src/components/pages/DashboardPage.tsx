@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { FileText, Users, Eye, ArrowUpRight, Loader2 } from "lucide-react";
+import { FileText, Users, Eye, ArrowUpRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,60 +14,27 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import Loading from "@/app/loading";
+import { fetchDashboardAnalytics } from "@/supabase/CRUD/ANALYTICS";
 
-// This is a mock function to simulate fetching data from Supabase.
-// You will replace this with your actual Supabase data fetching logic.
-async function fetchAnalyticsData() {
-  // Simulate a network delay
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  // Replace this with your Supabase calls
-  // const totalArticles = await supabase.from('articles').count();
-  // const totalAuthors = await supabase.from('authors').count();
-  // const totalViews = await supabase.from('views').sum('count');
-  // const recentArticles = await supabase.from('articles').select('*').order('created_at', { ascending: false }).limit(5);
-
-  return {
-    totalArticles: 124,
-    totalAuthors: 7,
-    totalViews: 34567,
-    recentArticles: [
-      {
-        id: 1,
-        title: "Getting Started with Next.js 14",
-        views: 1200,
-        status: "Published",
-      },
-      {
-        id: 2,
-        title: "Mastering Supabase for Full-Stack Apps",
-        views: 850,
-        status: "Published",
-      },
-      { id: 3, title: "The Power of Shadcn UI", views: 670, status: "Draft" },
-      {
-        id: 4,
-        title: "Optimizing Your Blog for SEO",
-        views: 420,
-        status: "Published",
-      },
-      {
-        id: 5,
-        title: "Writing Compelling Article Titles",
-        views: 310,
-        status: "Draft",
-      },
-    ],
-  };
-}
+type DashboardAnalytics = {
+  totalArticles: number | null;
+  totalAuthors: number | null;
+  totalViews: number;
+  recentArticles: {
+    slug: string;
+    title: string;
+    views: number;
+    status: string;
+  }[];
+};
 
 export default function DashboardPage() {
-  const [analytics, setAnalytics] = useState(null);
+  const [analytics, setAnalytics] = useState<DashboardAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
-      const data = await fetchAnalyticsData();
+      const data = await fetchDashboardAnalytics();
       setAnalytics(data);
       setIsLoading(false);
     }
@@ -76,6 +43,17 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return <Loading />;
+  }
+
+  if (!analytics) {
+    return (
+      <div className="text-center p-8 text-red-600">
+        <p>
+          Could not load dashboard analytics. Please check your Supabase
+          connection.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -135,26 +113,39 @@ export default function DashboardPage() {
           </Link>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead className="text-right">Views</TableHead>
-                <TableHead className="text-right">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {analytics.recentArticles.map((article) => (
-                <TableRow key={article.id}>
-                  <TableCell className="font-medium">{article.title}</TableCell>
-                  <TableCell className="text-right">
-                    {article.views.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right">{article.status}</TableCell>
+          {analytics.recentArticles && analytics.recentArticles.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead className="text-right">Views</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {analytics.recentArticles.map((article) => (
+                  <TableRow key={article?.slug}>
+                    <TableCell className="font-medium">
+                      {article.title}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {article.views.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {article.status}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-8">
+              <span className="text-5xl">📝</span>
+              <p className="mt-4 text-center text-slate-500">
+                No articles found. Start writing your first blog post!
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

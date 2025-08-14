@@ -1,0 +1,5 @@
+ALTER TABLE articles
+ADD COLUMN views INT DEFAULT 0;
+
+ALTER TABLE articles
+ADD COLUMN status TEXT;

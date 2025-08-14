@@ -1,9 +1,10 @@
+import ArticlesPage from "@/components/pages/ArticlesPage";
 import React from "react";
 
 function pages() {
   return (
     <div>
-      <p>Articles page</p>
+      <ArticlesPage />
     </div>
   );
 }
