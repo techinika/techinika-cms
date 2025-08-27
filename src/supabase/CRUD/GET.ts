@@ -1,4 +1,4 @@
-import supabase from "../supabase";
+import supabase, { supabaseAdminClient } from "../supabase";
 
 export async function fetchArticles({ query = "", status = "all" }) {
   try {
@@ -30,5 +30,45 @@ export async function fetchArticles({ query = "", status = "all" }) {
       error
     );
     return { success: false, data: [], error: "An unexpected error occurred." };
+  }
+}
+
+export async function fetchAuthorsWithEmails() {
+  try {
+    const { data: users, error: usersError } =
+      await supabaseAdminClient.auth.admin.listUsers();
+
+    if (usersError) {
+      throw new Error(usersError.message);
+    }
+
+    const usersMap = new Map();
+    for (const user of users.users) {
+      usersMap.set(user.id, user);
+    }
+
+    const { data: authors, error: authorsError } = await supabase
+      .from("authors")
+      .select("*");
+
+    if (authorsError) {
+      throw new Error(authorsError.message);
+    }
+
+    const authorsWithEmails = authors.map((author) => {
+      const user = usersMap.get(author.id);
+      return {
+        ...author,
+        email: user ? user.email : "Email not found",
+      };
+    });
+
+    return { data: authorsWithEmails, error: null };
+  } catch (err) {
+    console.error("Error fetching authors:", err);
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : String(err),
+    };
   }
 }

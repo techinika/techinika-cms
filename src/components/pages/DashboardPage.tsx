@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import Loading from "@/app/loading";
 import { fetchDashboardAnalytics } from "@/supabase/CRUD/ANALYTICS";
+import { useAuth } from "@/lib/AuthProvider";
 
 type DashboardAnalytics = {
   totalArticles: number | null;
@@ -32,6 +33,10 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<DashboardAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const { user, loading } = useAuth();
+
+  console.log("Authenticated user:", user, loading);
+
   useEffect(() => {
     async function loadData() {
       const data = await fetchDashboardAnalytics();
@@ -41,7 +46,7 @@ export default function DashboardPage() {
     loadData();
   }, []);
 
-  if (isLoading) {
+  if (isLoading || loading) {
     return <Loading />;
   }
 
