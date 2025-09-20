@@ -73,15 +73,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           };
           setUser(combinedUser);
         } else {
-          // If the user logs out, clear the state.
           setUser(null);
         }
       });
 
-      // Set loading to false once the initial check is complete.
       setLoading(false);
-
-      // 6. Cleanup function to unsubscribe from the listener.
+      
       return () => {
         subscription?.unsubscribe();
       };

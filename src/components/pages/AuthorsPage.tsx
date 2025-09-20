@@ -7,7 +7,6 @@ import { inviteNewAuthor } from "@/supabase/CRUD/INSERT";
 import React, { useState, useEffect, useCallback } from "react";
 import CreateAuthorPage from "../parts/NewAuthor";
 import { Drawer, DrawerTrigger } from "../ui/drawer";
-import { Button } from "../ui/button";
 
 interface Author {
   id: string;
@@ -130,7 +129,7 @@ const Authors: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 md:p-12 font-sans">
+    <div className="min-h-screen bg-gray-50 p-8 md:p-12">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <header className="text-start mb-10 flex items-center justify-between">
@@ -141,7 +140,7 @@ const Authors: React.FC = () => {
           </div>
           <Drawer>
             <DrawerTrigger>
-              <Button>Invite a user</Button>
+              {/* <Button>Invite a user</Button> */}
             </DrawerTrigger>
             <CreateAuthorPage />
           </Drawer>

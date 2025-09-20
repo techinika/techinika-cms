@@ -77,7 +77,7 @@ export default function CreateAuthorPage() {
       }
 
       setSuccessMessage(
-        `Successfully invited ${newUser?.name}. An invitation email has been sent.`
+        `Successfully invited ${newUser}. An invitation email has been sent.`
       );
       setFormData({ name: "", email: "", bio: "", is_admin: false });
     } catch (err) {

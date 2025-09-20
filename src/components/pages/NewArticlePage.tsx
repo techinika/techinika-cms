@@ -20,40 +20,9 @@ import RichTextEditor from "../parts/RichEditor";
 import { Textarea } from "../ui/textarea";
 import { createArticle } from "@/supabase/CRUD/INSERT";
 
-// Define the types for the article and related objects
-type TableOfContentsItem = {
-  title: string;
-  url: string;
-};
-
-type Author = {
-  id: string;
-  name: string;
-  isAdmin: boolean; // Added isAdmin flag
-};
-
-type Category = {
-  id: string;
-  name: string;
-};
-
-export type Article = {
-  title: string;
-  slug: string;
-  author_id: string | null;
-  author: Author | null;
-  category: Category | null;
-  date: string;
-  image: string;
-  category_id: string;
-  summary: string;
-  tags: string;
-  views: number;
-  status: "draft" | "published" | "archived";
-  content: string;
-  table_of_contents?: TableOfContentsItem[];
-  read_time: string;
-};
+// Use types from the main types file to ensure compatibility
+import type { Article, Author, Category } from "@/types/main";
+import { useAuth } from "@/lib/AuthProvider";
 
 const generateSlug = (title: string) => {
   return title
@@ -63,34 +32,15 @@ const generateSlug = (title: string) => {
     .replace(/\s+/g, "-");
 };
 
-// --- Mock Data for demonstration ---
-// In a real application, you would fetch these from your Supabase tables.
-const MOCK_AUTHORS: Author[] = [
-  { id: "auth_admin_123", name: "Jane Doe (Admin)", isAdmin: true },
-  { id: "auth_user_456", name: "John Smith (User)", isAdmin: false },
-  { id: "auth_editor_789", name: "Emily White (Editor)", isAdmin: false },
-];
-
-const MOCK_CATEGORIES: Category[] = [
-  { id: "cat_tech", name: "Technology" },
-  { id: "cat_design", name: "Design" },
-  { id: "cat_marketing", name: "Marketing" },
-  { id: "cat_business", name: "Business" },
-];
-
-// Mock current user. This would be replaced by your actual user session from Supabase.
-// For this example, we'll assume the current user is a non-admin 'John Smith'.
-const CURRENT_USER: Author = MOCK_AUTHORS[1];
-// To test with an admin, change this to: const CURRENT_USER: Author = MOCK_AUTHORS[0];
-
-// -----------------------------------
-
 export default function CreateArticlePage() {
+  const { user, loading } = useAuth();
   const router = useRouter();
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState<Partial<Article>>({
     title: "",
     slug: "",
-    author_id: CURRENT_USER.id, // Pre-select the current user as the author
+    author_id: user?.id,
     category_id: "",
     date: new Date().toISOString().split("T")[0],
     image: "",
@@ -154,7 +104,7 @@ export default function CreateArticlePage() {
       ...formData,
       title: formData.title || "",
       slug: formData.slug || generateSlug(formData.title || ""),
-      author_id: formData.author_id || CURRENT_USER.id,
+      author_id: formData.author_id || user?.id,
       category_id: formData.category_id || "default_category_id",
       date: formData.date || new Date().toISOString().split("T")[0],
       image:
@@ -250,28 +200,24 @@ export default function CreateArticlePage() {
                 <Select
                   value={formData.author_id}
                   onValueChange={handleSelectAuthorChange}
-                  // Disable the select if the current user is not an admin
-                  disabled={!CURRENT_USER.isAdmin}
+                  disabled={!user?.is_admin}
                 >
                   <SelectTrigger id="author-select">
                     <SelectValue placeholder="Select an author" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {CURRENT_USER.isAdmin ? (
+                      {user?.is_admin ? (
                         // If admin, show all authors
-                        MOCK_AUTHORS.map((author) => (
+                        authors.map((author) => (
                           <SelectItem key={author.id} value={author.id}>
                             {author.name}
                           </SelectItem>
                         ))
                       ) : (
                         // If not admin, show only their own name
-                        <SelectItem
-                          key={CURRENT_USER.id}
-                          value={CURRENT_USER.id}
-                        >
-                          {CURRENT_USER.name}
+                        <SelectItem key={user?.id} value={user?.id ?? ""}>
+                          {user?.name}
                         </SelectItem>
                       )}
                     </SelectGroup>
@@ -291,7 +237,7 @@ export default function CreateArticlePage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {MOCK_CATEGORIES.map((category) => (
+                      {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}
                         </SelectItem>

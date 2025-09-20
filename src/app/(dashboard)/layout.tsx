@@ -3,7 +3,7 @@
 
 import { ReactNode, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu,
   Home,
@@ -31,9 +31,11 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 import { AuthProvider } from "@/lib/AuthProvider";
 import PrivateRoute from "@/lib/PrivateRoutes";
+import { handleLogout } from "@/supabase/CRUD/AUTH";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const navLinks = [
@@ -61,9 +63,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <AuthProvider>
-      {/* <PrivateRoute> */}
+      <PrivateRoute>
         <div className="flex min-h-screen bg-slate-50 text-slate-800">
-          {/* Sidebar for Desktop */}
           <aside
             className={`hidden lg:flex flex-col border-r border-slate-200 bg-white shadow-lg p-4 transition-all duration-300 ${
               isSidebarCollapsed ? "w-20" : "w-64"
@@ -118,11 +119,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </Button>
           </aside>
 
-          {/* Main Content Area */}
           <div className={`flex-1 flex flex-col transition-all duration-300`}>
             {/* Top Bar */}
             <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-4 shadow-sm md:px-6">
-              {/* Mobile Sidebar Toggle */}
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="outline" size="icon" className="lg:hidden">
@@ -132,7 +131,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 </SheetTrigger>
                 <SheetContent side="left" className="sm:max-w-xs">
                   <nav className="grid gap-6 text-lg font-medium p-4">
-                    {/* ... (Mobile navigation remains the same) */}
                     <div className="flex items-center gap-2 h-16 px-4 mb-4">
                       <Menu className="h-6 w-6 text-indigo-600" />
                       <span className="text-xl font-bold tracking-tight text-slate-900">
@@ -162,7 +160,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 </SheetContent>
               </Sheet>
 
-              {/* Top Bar Content */}
               <div className="flex-1">
                 <h1 className="text-xl font-semibold">
                   {navLinks.find((link) => link.href === pathname)?.label ||
@@ -179,7 +176,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   <span className="sr-only">Notifications</span>
                 </Button>
 
-                {/* User Profile Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -203,13 +199,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                      <Link
-                        href="/logout"
+                      <Button
+                        onClick={async () => {
+                          const clicked = await handleLogout();
+                          if (clicked) {
+                            router.push("/");
+                          } else {
+                            router.refresh();
+                          }
+                        }}
                         className="flex items-center gap-2 w-full"
+                        variant="outline"
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Log out</span>
-                      </Link>
+                      </Button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -220,7 +224,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
           </div>
         </div>
-      {/* </PrivateRoute> */}
+      </PrivateRoute>
     </AuthProvider>
   );
 }
