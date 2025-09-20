@@ -1,5 +1,5 @@
 import { Article } from "@/types/main";
-import supabase from "../supabase";
+import supabase, { supabaseAdminClient } from "../supabase";
 import { v4 as uuidv4 } from "uuid";
 
 export async function createArticle(articleData: Article) {
@@ -58,6 +58,60 @@ export async function uploadImage(file: File) {
       success: false,
       data: null,
       error: "An unexpected error occurred.",
+    };
+  }
+}
+
+// A reusable function to invite a new author via email.
+export async function inviteNewAuthor({
+  email,
+  name,
+  bio,
+  is_admin,
+}: {
+  email: string;
+  name: string;
+  bio: string;
+  is_admin: boolean;
+}) {
+  try {
+    const { data: inviteData, error: inviteError } =
+      await supabaseAdminClient.auth.admin.inviteUserByEmail(email, {
+        data: {
+          name,
+          bio,
+          lang: "english",
+          is_admin,
+        },
+      });
+
+    if (inviteError) {
+      throw new Error(inviteError.message);
+    }
+
+    const { data: authorData, error: authorError } = await supabaseAdminClient
+      .from("authors")
+      .insert([
+        {
+          id: inviteData.user.id, // The unique user ID from the invitation
+          name,
+          bio,
+          lang: "english",
+          is_admin,
+        },
+      ]);
+
+    if (authorError) {
+      throw new Error(authorError.message);
+    }
+
+    // Return the new user data upon successful completion of both steps.
+    return { data: authorData, error: null };
+  } catch (err) {
+    console.error("Error inviting new user and creating author:", err);
+    return {
+      data: null,
+      error: err instanceof Error ? err.message : String(err),
     };
   }
 }

@@ -47,3 +47,24 @@ export async function requestPasswordReset(email: string) {
     return { success: false, error: "An unexpected error occurred." };
   }
 }
+
+export const handleLogout = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Error logging out:", error.message);
+      return false;
+    } else {
+      console.log("User logged out successfully");
+      return true;
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("An unexpected error occurred:", error.message);
+    } else {
+      console.error("An unexpected error occurred:", error);
+    }
+    return false;
+  }
+};

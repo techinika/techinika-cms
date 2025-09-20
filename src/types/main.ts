@@ -15,7 +15,7 @@ export type TableOfContentsItem = {
 export type Article = {
   title: string;
   slug: string;
-  author_id: string | null;
+  author_id: string | undefined;
   author: Author | null; // The author can be null if not specified
   category: Category | null; // The category can be null if not specified
   date: string;
