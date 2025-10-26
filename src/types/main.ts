@@ -1,33 +1,21 @@
-// types/index.ts
-
-/**
- * Represents an item in the article's table of contents.
- */
-export type TableOfContentsItem = {
-  title: string;
-  level: 2 | 3; // Use 2 or 3 to represent h2 and h3 tags
-  slug: string; // The URL-friendly ID for the anchor link
-};
-
-/**
- * Represents a single blog article with all its properties.
- */
 export type Article = {
+  id: string;
+  lang: string;
+  created_at: string;
   title: string;
   slug: string;
-  author_id: string | undefined;
-  author: Author | null; // The author can be null if not specified
-  category: Category | null; // The category can be null if not specified
+  author_id: string | null;
+  author: Author | null;
+  category: Category | null;
   date: string;
   image: string;
   category_id: string;
+  views: number;
   summary: string;
   tags: string;
-  views: number;
-  status: "draft" | "published" | "archived";
+  status: string;
   content: string;
-  table_of_contents?: TableOfContentsItem[]; // The table of contents is optional
-  read_time: string; // The read time is a string, e.g., "4 min read"
+  read_time: string;
 };
 
 export interface JoinedArticle
@@ -45,7 +33,6 @@ export interface Author {
   image_url: string | null;
   external_link: string | null;
 }
-
 export interface Category {
   id: string;
   created_at: string;
@@ -59,12 +46,9 @@ export interface TrendingTechnology {
   lang: string;
   name: string;
   description: string;
-  learn_more_links: LearnMoreLink[] | null;
-}
-
-export interface LearnMoreLink {
-  title: string;
-  href: string;
+  tags: string;
+  slug: string;
+  icon: string;
 }
 
 export interface FeaturedStartup {
@@ -94,4 +78,122 @@ export interface FeaturedVideo {
   url: string;
   description: string;
   learn_more_links: string[] | null;
+}
+
+export interface UserType {
+  id: string;
+  created_at: string;
+  lang: string;
+  name: string;
+  email: string;
+  title: string | null;
+  bio: string | null;
+  image_url: string | null;
+  external_link: string | null;
+  username: string | null;
+  location: string | null;
+  x_handle: string | null;
+  role: "admin" | "author" | "reader" | "manager";
+  github_handle: string | null;
+  linkedin_handle: string | null;
+}
+
+export interface Tile {
+  id: string;
+  title: string;
+  role: string[];
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  color: string;
+  stats: { label: string; value: string }[];
+  children?: boolean;
+}
+
+export interface DashStructure {
+  [key: string]: Tile[];
+}
+
+export interface Resource {
+  id: string;
+  name: string;
+  type: "image" | "video" | "document" | "audio" | "other";
+  category: string;
+  sizeKB: number;
+  url: string;
+  uploaded_at: string;
+  uploaded_by: string;
+}
+
+export interface ResourceType {
+  [key: string]: string;
+}
+
+export interface Subscriber {
+  id: string;
+  email: string;
+  created_at: string;
+  subscribed: boolean;
+}
+
+export interface Campaign {
+  id: string;
+  name: string;
+  created_at: string;
+  scheduled_at: string | null;
+  sent_at: string | null;
+  status: "draft" | "scheduled" | "sent" | "canceled";
+  subject: string;
+  content: string;
+  total_recipients: number;
+  emails_sent: number;
+  emails_opened: number;
+  links_clicked: number;
+  unsubscribes: number;
+  bounces: number;
+  opens: number;
+  clicks: number;
+  conversions: number;
+  target: string;
+}
+
+export interface Querry {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  feedback: string;
+  created_at: string;
+}
+
+export interface Category {
+  id: string;
+  created_at: string;
+  lang: string;
+  name: string;
+}
+
+export interface ResourceMetadata {
+  cacheControl: string;
+  contentLength: number;
+  eTag: string;
+  httpStatusCode: number;
+  lastModified: string;
+  mimetype: string;
+  size: number;
+}
+
+export interface ResourceFile {
+  id: string;
+  name: string;
+  category: string;
+  url: string;
+  created_at: string;
+  updated_at: string;
+  last_accessed_at: string;
+  metadata: ResourceMetadata;
+}
+
+export interface ResourceCategory {
+  bucket: string;
+  resources: ResourceFile[];
 }
