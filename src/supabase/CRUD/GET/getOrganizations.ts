@@ -3,7 +3,7 @@ import supabase from "@/supabase/supabase";
 export async function getUserOrganizations(userId: string) {
   const { data: relations, error } = await supabase
     .from("user_company")
-    .select("company_id, role, note, companies(*)")
+    .select("company_id, role, note, featured_startups(*)")
     .eq("user_id", userId);
 
   if (error) throw new Error(error.message);
@@ -28,7 +28,7 @@ export async function getUserOrganizations(userId: string) {
       .eq("company_id", companyId);
 
     results.push({
-      company: item.companies,
+      company: item.featured_startups,
       role: item.role,
       note: item.note,
       opportunities: opportunities ?? 0,
