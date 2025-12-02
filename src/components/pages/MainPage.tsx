@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   LayoutDashboard,
   CornerUpLeft,
@@ -8,11 +8,11 @@ import {
   Feather,
   Send,
 } from "lucide-react";
-import { MOCK_USER } from "@/lib/utils";
 import { DashboardTile } from "../parts/DashboardTile";
 import { useRouter } from "next/navigation";
 import { handleTileClick } from "@/lib/functions";
 import { Tile } from "@/types/main";
+import { useAuth } from "@/lib/AuthContext";
 
 const MainTiles: Tile[] = [
   {
@@ -66,13 +66,14 @@ const MainTiles: Tile[] = [
 ];
 
 const MainPage = () => {
+  const auth = useAuth();
   const router = useRouter();
 
   const filteredTiles = useMemo(() => {
     const tiles = MainTiles || [];
 
-    return tiles.filter((tile: Tile) => tile.role.includes(MOCK_USER.role));
-  }, []);
+    return tiles.filter((tile: Tile) => tile.role.includes(auth?.role ?? ""));
+  }, [auth]);
 
   if (filteredTiles.length === 0) {
     return (
@@ -83,8 +84,7 @@ const MainPage = () => {
             No Dashboard Items Found
           </h1>
           <p className="mt-2 text-gray-600">
-            Your role ({MOCK_USER.role}) currently has no active management
-            tiles.
+            Your role ({auth?.role}) currently has no active management tiles.
           </p>
         </div>
       </div>
@@ -96,9 +96,9 @@ const MainPage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <header className="mb-8">
           <h1 className="text-3xl font-extrabold text-tech-dark">
-            Welcome back, {MOCK_USER.name}!
+            Welcome back, {auth?.user?.email}!
             <span className="text-xl font-semibold text-gray-500 ml-3 capitalize">
-              ({MOCK_USER.role})
+              ({auth?.role})
             </span>
           </h1>
           <p className="text-gray-500 mt-1">
@@ -128,7 +128,7 @@ const MainPage = () => {
             </h2>
             <p className="mt-2 text-gray-500">
               There are no available sections for your current role{" "}
-              <b>({MOCK_USER.role})</b> at this level.
+              <b>({auth?.role})</b> at this level.
             </p>
             <button
               onClick={() => router.back()}

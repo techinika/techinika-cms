@@ -1,19 +1,29 @@
 "use client";
 
 import { Navbar } from "@/components/parts/NavBar";
-import { MOCK_USER } from "@/lib/utils";
-import React from "react";
+import { checkLogin } from "@/lib/checkLogin";
+import { AuthResponse } from "@/types/authData";
+import React, { useEffect, useState } from "react";
+import { AuthContext } from '../../lib/AuthContext';
 
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [authData, setAuthData] = useState<AuthResponse>();
+  useEffect(() => {
+    const initData = async () => {
+      const data = await checkLogin();
+      setAuthData(data);
+    };
+    initData();
+  }, []);
 
   return (
-    <div>
-      <Navbar user={MOCK_USER} />
+    <AuthContext.Provider value={authData}>
+      <Navbar user={authData?.user ?? null} role={authData?.role ?? null} />
       {children}
-    </div>
+    </AuthContext.Provider>
   );
 }
