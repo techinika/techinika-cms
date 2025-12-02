@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { LayoutDashboard, Send, UserPlus } from "lucide-react";
-import { MOCK_USER } from "@/lib/utils";
 import { Tile } from "@/types/main";
 import SubPageTemplate from "../parts/SubPageTemplate";
+import { useAuth } from "@/lib/AuthContext";
 
 const CompanyTiles: Tile[] = [
   {
@@ -34,10 +34,11 @@ const CompanyTiles: Tile[] = [
 ];
 
 const ContentPage = () => {
+  const auth = useAuth();
   const filteredTiles = useMemo(() => {
     const tiles = CompanyTiles || [];
 
-    return tiles.filter((tile: Tile) => tile.role.includes(MOCK_USER.role));
+    return tiles.filter((tile: Tile) => tile.role.includes(auth?.role ?? ""));
   }, []);
 
   if (filteredTiles.length === 0) {
@@ -49,8 +50,7 @@ const ContentPage = () => {
             No Dashboard Items Found
           </h1>
           <p className="mt-2 text-gray-600">
-            Your role ({MOCK_USER.role}) currently has no active management
-            tiles.
+            Your role ({auth?.role}) currently has no active management tiles.
           </p>
         </div>
       </div>

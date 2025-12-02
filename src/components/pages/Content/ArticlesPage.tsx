@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Plus,
   Search,
@@ -10,7 +10,6 @@ import {
   Feather,
   ChevronsRight,
 } from "lucide-react";
-import { MOCK_USER } from "@/lib/utils";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Category, JoinedArticle } from "@/types/main";
@@ -18,6 +17,7 @@ import { ArticleList } from "@/components/parts/ArticlesList";
 import { AnalyticsCard } from "@/components/parts/AnalyticsCard";
 import Loading from "@/app/loading";
 import { getArticles, getCategories } from "@/supabase/CRUD/GET";
+import { useAuth } from "@/lib/AuthContext";
 
 const ARTICLE_STATUSES = ["published", "draft", "archived", "cancelled"];
 
@@ -77,6 +77,9 @@ const ArticleAnalytics = ({ articles }: { articles: JoinedArticle[] }) => {
 };
 
 export const ArticleManagementPage = () => {
+  const auth = useAuth();
+  const currentUser = auth?.user;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
@@ -86,8 +89,6 @@ export const ArticleManagementPage = () => {
   const [categoriesList, setCategoriesList] = useState<Category[]>([]);
   const [articles, setArticles] = useState<JoinedArticle[]>([]);
   const ITEMS_PER_PAGE = 8;
-
-  const currentUser = MOCK_USER;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,8 +113,8 @@ export const ArticleManagementPage = () => {
 
   const viewableArticles: JoinedArticle[] = useMemo(() => {
     let viewable = articles;
-    if (currentUser.role !== "admin") {
-      viewable = articles.filter((a) => a?.author?.id === currentUser.id);
+    if (auth?.role !== "admin") {
+      viewable = articles.filter((a) => a?.author?.id === currentUser?.id);
     }
 
     if (filterStatus !== "all") {
@@ -140,8 +141,8 @@ export const ArticleManagementPage = () => {
     return viewable;
   }, [
     articles,
-    currentUser.role,
-    currentUser.id,
+    auth?.role,
+    currentUser?.id,
     filterStatus,
     filterCategory,
     filterDate,
@@ -162,9 +163,9 @@ export const ArticleManagementPage = () => {
             Articles Management
           </h1>
           <p className="text-gray-500 mt-1">
-            {currentUser.role === "admin"
+            {auth?.role === "admin"
               ? "Viewing all articles across the platform."
-              : `Viewing your articles (ID: ${currentUser.id}).`}
+              : `Viewing your articles (ID: ${currentUser?.id}).`}
           </p>
         </div>
         <Link
@@ -176,10 +177,8 @@ export const ArticleManagementPage = () => {
         </Link>
       </div>
 
-      {/* Analytics Summary */}
       <ArticleAnalytics articles={viewableArticles} />
 
-      {/* Filtering Controls */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-xl mb-8 border border-gray-100">
         {/* Search */}
         <div className="lg:col-span-2">

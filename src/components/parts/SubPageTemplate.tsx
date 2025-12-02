@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useMemo } from "react";
-import { LayoutDashboard, CornerUpLeft, Send, UserPlus } from "lucide-react";
-import { MOCK_USER } from "@/lib/utils";
+import { useMemo } from "react";
+import { LayoutDashboard, CornerUpLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { handleTileClick } from "@/lib/functions";
 import { Tile } from "@/types/main";
 import { DashboardTile } from "@/components/parts/DashboardTile";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { useAuth } from "@/lib/AuthContext";
 
 const SubPageTemplate = ({
   tilesToUse,
@@ -16,12 +16,13 @@ const SubPageTemplate = ({
   tilesToUse: Tile[];
   page: string;
 }) => {
+  const auth = useAuth();
   const router = useRouter();
 
   const filteredTiles = useMemo(() => {
     const tiles = tilesToUse || [];
 
-    return tiles.filter((tile: Tile) => tile.role.includes(MOCK_USER.role));
+    return tiles.filter((tile: Tile) => tile.role.includes(auth?.role ?? ""));
   }, []);
 
   if (filteredTiles.length === 0) {
@@ -33,7 +34,7 @@ const SubPageTemplate = ({
             No Dashboard Items Found
           </h1>
           <p className="mt-2 text-gray-600">
-            Your role ({MOCK_USER.role}) currently has no active management
+            Your role ({auth?.role}) currently has no active management
             tiles.
           </p>
         </div>
@@ -76,7 +77,7 @@ const SubPageTemplate = ({
             </h2>
             <p className="mt-2 text-gray-500">
               There are no available sections for your current role{" "}
-              <b>({MOCK_USER.role})</b> at this level.
+              <b>({auth?.role})</b> at this level.
             </p>
             <button
               onClick={() => router.back()}
