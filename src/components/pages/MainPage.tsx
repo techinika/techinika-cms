@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  LayoutDashboard,
-  CornerUpLeft,
-  Feather,
-  Send,
-} from "lucide-react";
+import { LayoutDashboard, CornerUpLeft, Feather, Send } from "lucide-react";
 import { DashboardTile } from "../parts/DashboardTile";
 import { useRouter } from "next/navigation";
 import { handleTileClick } from "@/lib/functions";
@@ -16,6 +11,7 @@ import { getArticlesStats } from "@/supabase/CRUD/GET/getNumbers";
 import { ContentStats } from "@/types/stats";
 import { getUserOrganizations } from "@/supabase/CRUD/GET/getOrganizations";
 import { mapCompaniesToCards } from "@/lib/utils";
+import Loading from "@/app/loading";
 
 const MainPage = () => {
   const auth = useAuth();
@@ -27,64 +23,75 @@ const MainPage = () => {
     totalSubscribers: 0,
   });
   const [companies, setCompanies] = useState<Tile[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getStats = async () => {
-      const data = await getArticlesStats();
-      const companies = await getUserOrganizations(auth?.user?.id ?? "");
-      const d = mapCompaniesToCards(companies);
-      setStats(data);
-      setCompanies(d);
+      if (!auth?.user) return;
+
+      try {
+        setLoading(true);
+
+        const data = await getArticlesStats();
+        const rawCompanies = await getUserOrganizations(auth?.user?.id);
+        const mapped = mapCompaniesToCards(rawCompanies);
+
+        setStats(data);
+        setCompanies(mapped);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getStats();
   }, [auth?.user]);
 
-  const MainTiles: Tile[] = [
-    {
-      id: "content",
-      title: "Content Drafting",
-      role: ["author", "admin"],
-      icon: Feather,
-      color: "bg-emerald-600",
-      stats: [
-        { label: "All Articles", value: `${stats?.totalArticles}` },
-        { label: "Published Last Month", value: `${stats?.monthlyArticles}` },
-      ],
-      children: true,
-    },
-    {
-      id: "newsletter",
-      title: "Newsletter Studio",
-      role: ["author", "admin"],
-      icon: Send,
-      color: "bg-yellow-600",
-      stats: [
-        { label: "Subscribers", value: `${stats?.totalSubscribers}` },
-        { label: "Open Rate", value: "45%" },
-      ],
-      children: true,
-    },
-    {
-      id: "system",
-      title: "System Management",
-      role: ["admin"],
-      icon: LayoutDashboard,
-      color: "bg-red-600",
-      stats: [
-        { label: "Total Entities", value: "240" },
-        { label: "Active Admins", value: "5" },
-      ],
-      children: true,
-    },
-    ...companies,
-  ];
-
   const filteredTiles = useMemo(() => {
+    const MainTiles: Tile[] = [
+      {
+        id: "content",
+        title: "Content Drafting",
+        role: ["author", "admin"],
+        icon: Feather,
+        color: "bg-emerald-600",
+        stats: [
+          { label: "All Articles", value: `${stats?.totalArticles}` },
+          { label: "Published Last Month", value: `${stats?.monthlyArticles}` },
+        ],
+        children: true,
+      },
+      {
+        id: "newsletter",
+        title: "Newsletter Studio",
+        role: ["author", "admin"],
+        icon: Send,
+        color: "bg-yellow-600",
+        stats: [
+          { label: "Subscribers", value: `${stats?.totalSubscribers}` },
+          { label: "Open Rate", value: "45%" },
+        ],
+        children: true,
+      },
+      {
+        id: "system",
+        title: "System Management",
+        role: ["admin"],
+        icon: LayoutDashboard,
+        color: "bg-red-600",
+        stats: [
+          { label: "Total Entities", value: "240" },
+          { label: "Active Admins", value: "5" },
+        ],
+        children: true,
+      },
+      ...companies,
+    ];
     const tiles = MainTiles || [];
 
     return tiles.filter((tile: Tile) => tile.role.includes(auth?.role ?? ""));
-  }, [auth]);
+  }, [auth?.role, stats, companies]);
 
   if (filteredTiles.length === 0) {
     return (
@@ -101,6 +108,9 @@ const MainPage = () => {
       </div>
     );
   }
+
+  if (!auth) return <Loading />;
+  if (loading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -25,7 +25,7 @@ export async function getUserOrganizations(userId: string) {
     const { count: events } = await supabase
       .from("events")
       .select("*", { count: "exact", head: true })
-      .eq("company_id", companyId);
+      .eq("organizer_id", companyId);
 
     results.push({
       company: item.featured_startups,
