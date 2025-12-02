@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
   CornerUpLeft,
-  Briefcase,
   Feather,
   Send,
 } from "lucide-react";
@@ -15,6 +14,8 @@ import { Tile } from "@/types/main";
 import { useAuth } from "@/lib/AuthContext";
 import { getArticlesStats } from "@/supabase/CRUD/GET/getNumbers";
 import { ContentStats } from "@/types/stats";
+import { getUserOrganizations } from "@/supabase/CRUD/GET/getOrganizations";
+import { mapCompaniesToCards } from "@/lib/utils";
 
 const MainPage = () => {
   const auth = useAuth();
@@ -25,15 +26,19 @@ const MainPage = () => {
     drafts: 0,
     totalSubscribers: 0,
   });
+  const [companies, setCompanies] = useState<Tile[]>([]);
 
   useEffect(() => {
     const getStats = async () => {
       const data = await getArticlesStats();
+      const companies = await getUserOrganizations(auth?.user?.id ?? "");
+      const d = mapCompaniesToCards(companies);
       setStats(data);
+      setCompanies(d);
     };
 
     getStats();
-  }, []);
+  }, [auth?.user]);
 
   const MainTiles: Tile[] = [
     {
@@ -72,18 +77,7 @@ const MainPage = () => {
       ],
       children: true,
     },
-    {
-      id: "techinika",
-      title: "Techinika",
-      role: ["manager", "admin"],
-      icon: Briefcase,
-      color: "bg-indigo-600",
-      stats: [
-        { label: "QTD Revenue", value: "$85K" },
-        { label: "Active Projects", value: "12" },
-      ],
-      children: true,
-    },
+    ...companies,
   ];
 
   const filteredTiles = useMemo(() => {
