@@ -1,12 +1,26 @@
+import { Article, Opportunity } from "@/types/main";
 import { BookOpen, Gift } from "lucide-react";
 import Link from "next/link";
+
+interface EmailPreviewProps {
+  config: {
+    templateMode: string;
+    subject: string;
+    fromName: string;
+    includeArticles: boolean;
+    includeOpportunities: boolean;
+  };
+  articles: Article[];
+  opportunities: Opportunity[];
+  customText: string;
+}
 
 export const EmailPreview = ({
   config,
   articles,
   opportunities,
   customText,
-}) => {
+}: EmailPreviewProps) => {
   const {
     templateMode,
     subject,
@@ -15,12 +29,12 @@ export const EmailPreview = ({
     includeOpportunities,
   } = config;
 
-  const ArticleBlock = ({ article }) => (
+  const ArticleBlock = ({ article }: { article: Article }) => (
     <div className="mb-4 p-4 border-l-4 border-primary bg-white rounded-lg shadow-sm">
       <h4 className="text-lg font-bold text-gray-900 mb-1">{article.title}</h4>
       <p className="text-xs text-gray-500 mb-2">Published: {article.date}</p>
       <Link
-        href={article.url}
+        href={"#"}
         className="inline-block px-3 py-1 text-sm font-semibold text-white bg-primary rounded-full transition"
       >
         Read Article &rarr;
@@ -28,7 +42,7 @@ export const EmailPreview = ({
     </div>
   );
 
-  const OpportunityBlock = ({ opp }) => (
+  const OpportunityBlock = ({ opp }: { opp: Opportunity }) => (
     <div className="mb-4 p-4 bg-yellow-50 border-t-2 border-b-2 border-yellow-400 rounded-lg shadow-inner">
       <h4 className="text-lg font-bold text-gray-900 mb-1 flex items-center">
         <Gift className="w-5 h-5 mr-2 text-yellow-600" /> {opp.title}
@@ -38,7 +52,7 @@ export const EmailPreview = ({
         href="#"
         className="inline-block px-4 py-2 text-sm font-bold text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 transition"
       >
-        {opp.cta}
+        Check out
       </Link>
     </div>
   );
@@ -81,7 +95,7 @@ export const EmailPreview = ({
             <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b pb-2 flex items-center">
               <BookOpen className="w-6 h-6 mr-2 text-primary" /> Latest Reads
             </h2>
-            {articles.map((art) => (
+            {articles.map((art: Article) => (
               <ArticleBlock key={art.id} article={art} />
             ))}
             <p className="text-center text-sm mt-4 text-gray-500">

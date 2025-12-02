@@ -17,7 +17,9 @@ const INITIAL_FORM_STATE = {
 export const NewTechnologyForm = () => {
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
 
     const newFormData = { ...formData, [name]: value };

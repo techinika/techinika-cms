@@ -30,7 +30,7 @@ export const ResourceLibraryPage = () => {
           "authors",
           "article-videos",
         ]);
-        setResources(data);
+        setResources([]);
       } catch (error) {
         console.log(error);
       }
@@ -135,7 +135,7 @@ export const ResourceLibraryPage = () => {
         <select
           value={filterType}
           onChange={(e) => {
-            setFilterType(RESOURCE_CATEGORIES | "all");
+            setFilterType(e.target.value);
             setFilterCategory("all");
           }}
           className="block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary p-2.5"

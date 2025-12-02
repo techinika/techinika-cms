@@ -16,44 +16,7 @@ import {
 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { EmailPreview } from "@/components/parts/EmailPreview";
-
-const MOCK_ARTICLES = [
-  {
-    id: 1,
-    title: "The Future of AI in Content Creation",
-    url: "#",
-    date: "Oct 20, 2024",
-  },
-  {
-    id: 2,
-    title: "10 Tips for Optimizing Blog SEO",
-    url: "#",
-    date: "Oct 15, 2024",
-  },
-  {
-    id: 3,
-    title: "Understanding Google’s Latest Algorithm",
-    url: "#",
-    date: "Oct 01, 2024",
-  },
-];
-
-const MOCK_OPPORTUNITIES = [
-  {
-    id: 10,
-    title: "Exclusive Beta Access: New Feature X",
-    description:
-      "Be the first to try out our upcoming feature and provide feedback.",
-    cta: "Join Beta Now",
-  },
-  {
-    id: 11,
-    title: "Free Webinar: Mastering the Platform",
-    description:
-      "Live training session on advanced features, hosted next week.",
-    cta: "Register Today",
-  },
-];
+import { Article, Opportunity } from "@/types/main";
 
 export const AUDIENCE_OPTIONS = [
   {
@@ -90,14 +53,14 @@ const NewCampaignPage = () => {
   const [customText, setCustomText] = useState(
     "Hi [Name],\n\nWe're thrilled to share our latest content and some exciting news about new features coming soon! Check out the details below."
   );
-  const [selectedArticles, setSelectedArticles] = useState(
-    MOCK_ARTICLES.slice(0, 2)
+  const [selectedArticles, setSelectedArticles] = useState<Article[]>(
+    [].slice(0, 2)
   );
-  const [selectedOpportunities, setSelectedOpportunities] = useState(
-    MOCK_OPPORTUNITIES.slice(0, 1)
-  );
+  const [selectedOpportunities, setSelectedOpportunities] = useState<
+    Opportunity[]
+  >([].slice(0, 1));
 
-  const updateConfig = (key:string, value: boolean|string|number) => {
+  const updateConfig = (key: string, value: boolean | string | number) => {
     setConfig((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -148,7 +111,7 @@ const NewCampaignPage = () => {
           onClick={() => updateConfig("templateMode", "plain")}
           className={`p-5 rounded-xl border-4 cursor-pointer transition duration-200 ${
             config.templateMode === "plain"
-              ? "border-purple-600 bg-purple-50 shadow-lg"
+              ? "border-blue-600 bg-purple-50 shadow-lg"
               : "border-gray-200 bg-white hover:bg-gray-50"
           }`}
         >
@@ -165,16 +128,15 @@ const NewCampaignPage = () => {
 
   const ContentSelectionPanel = () => {
     const isStructured = config.templateMode === "structured";
-
-    const toggleArticle = (article) => {
+    const toggleArticle = (article: Article) => {
       setSelectedArticles((prev) =>
         prev.some((a) => a.id === article.id)
           ? prev.filter((a) => a.id !== article.id)
           : [...prev, article]
       );
     };
-    const isArticleSelected = (article) =>
-      selectedArticles.some((a) => a.id === article.id);
+    const isArticleSelected = (article: Article) =>
+      selectedArticles.some((a) => a.id === article?.id);
 
     return (
       <div
@@ -220,12 +182,11 @@ const NewCampaignPage = () => {
           {config.includeArticles && (
             <div className="pl-6 pt-2 space-y-2 border-l-2 border-blue-300 ml-2">
               <p className="text-sm font-semibold text-gray-600">
-                Selected Articles ({selectedArticles.length}/
-                {MOCK_ARTICLES.length})
+                Selected Articles ({selectedArticles.length}/{[].length})
               </p>
-              {MOCK_ARTICLES.map((article) => (
+              {[].map((article: Article) => (
                 <div
-                  key={article.id}
+                  key={article?.id}
                   className="flex justify-between items-center bg-gray-50 p-3 rounded-lg"
                 >
                   <span className="text-sm truncate">{article.title}</span>
@@ -268,18 +229,18 @@ const NewCampaignPage = () => {
             <div className="pl-6 pt-2 space-y-2 border-l-2 border-yellow-300 ml-2">
               <p className="text-sm font-semibold text-gray-600">
                 Selected Opportunities ({selectedOpportunities.length}/
-                {MOCK_OPPORTUNITIES.length})
+                {[].length})
               </p>
-              {MOCK_OPPORTUNITIES.map((opp) => (
+              {[].map((opp: Opportunity) => (
                 <div
                   key={opp.id}
                   className="flex justify-between items-center bg-gray-50 p-3 rounded-lg"
                 >
-                  <span className="text-sm truncate">{opp.title}</span>
+                  <span className="text-sm truncate">{opp?.title}</span>
                   <button
                     onClick={() =>
                       setSelectedOpportunities((prev) =>
-                        prev.some((o) => o.id === opp.id)
+                        prev.some((o: Opportunity) => o.id === opp.id)
                           ? prev.filter((o) => o.id !== opp.id)
                           : [...prev, opp]
                       )
@@ -290,7 +251,9 @@ const NewCampaignPage = () => {
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >
-                    {selectedOpportunities.some((o) => o.id === opp.id)
+                    {selectedOpportunities.some(
+                      (o: Opportunity) => o.id === opp.id
+                    )
                       ? "Remove"
                       : "Add"}
                   </button>
@@ -459,7 +422,7 @@ const NewCampaignPage = () => {
               </h2>
               <EmailPreview
                 config={config}
-                articles={selectedArticles}
+                articles={selectedArticles ?? []}
                 opportunities={selectedOpportunities}
                 customText={customText}
               />

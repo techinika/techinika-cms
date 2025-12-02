@@ -136,6 +136,7 @@ export interface Subscriber {
 
 export interface Campaign {
   id: string;
+  fromName: string;
   name: string;
   created_at: string;
   scheduled_at: string | null;
@@ -144,6 +145,7 @@ export interface Campaign {
   subject: string;
   content: string;
   total_recipients: number;
+  preview_html: string;
   emails_sent: number;
   emails_opened: number;
   links_clicked: number;
@@ -152,7 +154,39 @@ export interface Campaign {
   opens: number;
   clicks: number;
   conversions: number;
+  scheduled_for: string;
   target: string;
+  content_structure: { articles: Article[]; opportunities: Opportunity[] };
+}
+
+export interface Opportunity {
+  id: string;
+  title: string;
+  slug: string;
+  type: "Job" | "Tender" | "Grant" | "Internship" | "Other";
+  organization?: string | null;
+  companyId?: string | null;
+  company: FeaturedStartup | null;
+  location: string;
+  salary?: string | null;
+  application_link?: string | null;
+  contact_email?: string | null;
+  tags?: string[];
+  description: string;
+  full_description: string;
+  requirements?: string | null;
+  benefits?: string | null;
+  status: string;
+  featured: boolean;
+  views: number;
+  created_at: string;
+  updated_at: string;
+  expires_at?: string;
+  seo_description?: string | null;
+  hints: {
+    bestCandidate: string;
+    winningTips: string[];
+  };
 }
 
 export interface Querry {

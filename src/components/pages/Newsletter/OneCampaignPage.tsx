@@ -20,65 +20,9 @@ import {
   Gift,
 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Campaign } from "@/types/main";
 
-const MOCK_CAMPAIGNS = {
-  "101": {
-    id: "101",
-    name: "Q3 Product Launch Report",
-    status: "Sent",
-    sent_at: "2024-09-15T10:00:00Z",
-    audience: "Users + Subscribers (Combined)",
-    emails_sent: 15500,
-    opens: 3875,
-    clicks: 1240,
-    bounces: 155,
-    conversions: 250,
-    content_structure: {
-      articles: 2,
-      opportunities: 1,
-      custom_text_length: 350,
-    },
-    subject: "Your Q3 Report: New Features Inside!",
-    preview_html:
-      "We are excited to share the amazing progress we made this quarter. Check out the articles below for deep dives...",
-  },
-  // 2. SCHEDULED CAMPAIGN - Focus on Timing & Cancellation
-  "102": {
-    id: "102",
-    name: "Holiday Sales Preview",
-    status: "Scheduled",
-    scheduled_for: "2024-11-05T08:00:00Z",
-    audience: "Mailing List Subscribers",
-    emails_sent: 0,
-    content_structure: {
-      articles: 0,
-      opportunities: 2,
-      custom_text_length: 200,
-    },
-    subject: "Sneak Peek: Get Early Access to Holiday Deals!",
-    preview_html:
-      "Our holiday offers are coming soon! Click the opportunities below to get your exclusive early-bird access.",
-  },
-  // 3. DRAFT CAMPAIGN - Focus on Editing & Preparation
-  "103": {
-    id: "103",
-    name: "Onboarding Follow-up Series (Draft)",
-    status: "Draft",
-    created_at: "2024-10-20T12:00:00Z",
-    audience: "Registered Users",
-    emails_sent: 0,
-    content_structure: {
-      articles: 1,
-      opportunities: 0,
-      custom_text_length: 500,
-    },
-    subject: "Welcome to the Team! Here’s your guide.",
-    preview_html:
-      "Thanks for joining us! This email is the first in your onboarding series. We've included a great article to get you started.",
-  },
-};
-
-const getStatusStyles = (status) => {
+const getStatusStyles = (status: string) => {
   switch (status) {
     case "Sent":
       return "bg-green-600 text-white";
@@ -98,6 +42,13 @@ const AnalyticsMetric = ({
   unit = "",
   colorClass,
   tooltip,
+}: {
+  Icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  value: number;
+  unit?: string;
+  colorClass?: string;
+  tooltip?: string;
 }) => (
   <div className="flex flex-col items-start p-4 bg-white rounded-xl shadow-lg border border-gray-100 transition hover:shadow-xl">
     <Icon className={`w-6 h-6 mb-2 ${colorClass}`} />
@@ -114,16 +65,27 @@ const AnalyticsMetric = ({
 );
 
 const CampaignDetailPage = () => {
-  // Set default to the most complex state (Sent) for demonstration
   const [campaignId, setCampaignId] = useState("101");
-  const campaign = MOCK_CAMPAIGNS[campaignId];
-  const status = campaign.status;
+  const [campaign, setCampaign] = useState<Campaign>();
+  const status = campaign?.status ?? "";
+
+  const articlesCount = Array.isArray(campaign?.content_structure?.articles)
+    ? campaign.content_structure.articles.length
+    : campaign?.content_structure?.articles ?? 0;
+
+  const opportunitiesCount = Array.isArray(campaign?.content_structure?.opportunities)
+    ? campaign.content_structure.opportunities.length
+    : campaign?.content_structure?.opportunities ?? 0;
 
   // Derived analytics metrics (only for Sent campaigns)
   const metrics = useMemo(() => {
+    if (!campaign) {
+      return { openRate: 0, bounceRate: 0, clickRate: 0, conversionRate: 0 };
+    }
+
     const { emails_sent, opens, clicks, bounces, conversions } = campaign;
 
-    if (status !== "Sent" || emails_sent === 0) {
+    if (status !== "sent" || emails_sent === 0) {
       return { openRate: 0, bounceRate: 0, clickRate: 0, conversionRate: 0 };
     }
 
@@ -138,22 +100,20 @@ const CampaignDetailPage = () => {
 
   // --- Action Handlers (Mocked) ---
   const handleEdit = () =>
-    alert(`Redirecting to editor for campaign: ${campaign.name}`);
-  const handleSendNow = () => alert(`Sending campaign: ${campaign.name} NOW!`);
+    alert(`Redirecting to editor for campaign: ${campaign?.name}`);
+  const handleSendNow = () => alert(`Sending campaign: ${campaign?.name} NOW!`);
   const handleCancelSchedule = () => {
-    alert(`Cancelling scheduled campaign: ${campaign.name}`);
-    // In a real app, this would update the status to 'Draft'
-    setCampaignId("103"); // Mock switch to Draft status
+    alert(`Cancelling scheduled campaign: ${campaign?.name}`);
+    setCampaignId("103");
   };
-  const handleDuplicate = () => alert(`Duplicating campaign: ${campaign.name}`);
-
-  // --- Render Helpers ---
+  const handleDuplicate = () =>
+    alert(`Duplicating campaign: ${campaign?.name}`);
 
   const renderActionButtons = () => {
     const baseClasses =
       "flex items-center px-4 py-2.5 font-bold rounded-lg shadow-md transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed";
 
-    if (status === "Sent") {
+    if (status === "sent") {
       return (
         <button
           onClick={handleDuplicate}
@@ -162,7 +122,7 @@ const CampaignDetailPage = () => {
           <CornerUpLeft className="w-5 h-5 mr-2" /> Duplicate Campaign
         </button>
       );
-    } else if (status === "Scheduled") {
+    } else if (status === "scheduled") {
       return (
         <div className="flex space-x-4">
           <button
@@ -179,7 +139,7 @@ const CampaignDetailPage = () => {
           </button>
         </div>
       );
-    } else if (status === "Draft") {
+    } else if (status === "draft") {
       return (
         <div className="flex space-x-4">
           <button
@@ -200,9 +160,8 @@ const CampaignDetailPage = () => {
     return null;
   };
 
-  // Renders the main details based on status
   const renderDetailsPanel = () => {
-    if (status === "Sent") {
+    if (status === "sent") {
       return (
         <>
           <h2 className="text-2xl font-bold text-gray-900 mb-5 flex items-center">
@@ -213,7 +172,7 @@ const CampaignDetailPage = () => {
             <AnalyticsMetric
               Icon={Send}
               title="Emails Sent"
-              value={campaign.emails_sent}
+              value={campaign?.emails_sent ?? 0}
               colorClass="text-primary"
             />
             <AnalyticsMetric
@@ -247,13 +206,13 @@ const CampaignDetailPage = () => {
             <AnalyticsMetric
               Icon={User}
               title="Total Conversions"
-              value={campaign.conversions}
+              value={campaign?.conversions ?? 0}
               colorClass="text-pink-600"
             />
           </div>
         </>
       );
-    } else if (status === "Scheduled") {
+    } else if (status === "scheduled") {
       return (
         <>
           <h2 className="text-2xl font-bold text-gray-900 mb-5 flex items-center">
@@ -264,7 +223,9 @@ const CampaignDetailPage = () => {
               <Clock className="w-5 h-5 mr-3 text-primary" />
               Scheduled For:{" "}
               <span className="ml-2 font-extrabold text-primary">
-                {new Date(campaign.scheduled_for).toLocaleString()}
+                {new Date(
+                  campaign?.scheduled_for ?? new Date()
+                ).toLocaleString()}
               </span>
             </div>
             <p className="text-sm text-gray-500 mt-2">
@@ -274,7 +235,7 @@ const CampaignDetailPage = () => {
           </div>
         </>
       );
-    } else if (status === "Draft") {
+    } else if (status === "draft") {
       return (
         <div className="p-6 bg-yellow-50 rounded-xl shadow-lg border border-yellow-200 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-3 flex items-center">
@@ -292,7 +253,6 @@ const CampaignDetailPage = () => {
     return null;
   };
 
-  // Placeholder for the email preview content
   const EmailPreviewPlaceholder = () => (
     <div className="mt-8">
       <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
@@ -303,10 +263,10 @@ const CampaignDetailPage = () => {
           {/* Header */}
           <div className="bg-primary text-white p-6 rounded-t-lg">
             <h4 className="text-sm font-light">
-              From: {campaign.fromName || "The Blog Team"}
+              From: {campaign?.fromName || "The Blog Team"}
             </h4>
             <h1 className="text-2xl font-extrabold mt-1">
-              {campaign.subject || "No Subject"}
+              {campaign?.subject || "No Subject"}
             </h1>
           </div>
 
@@ -314,28 +274,31 @@ const CampaignDetailPage = () => {
             <div
               className="text-gray-800 leading-relaxed"
               dangerouslySetInnerHTML={{
-                __html: campaign.preview_html.replace(/\n/g, "<br />"),
+                __html: campaign?.preview_html.replace(/\n/g, "<br />") ?? "",
               }}
             />
 
-            {campaign.content_structure.articles > 0 && (
-              <div className="mt-6 pt-4 border-t border-gray-100">
-                <h4 className="font-bold text-lg text-gray-900 mb-3 flex items-center">
-                  <BookOpen className="w-5 h-5 mr-2 text-primary" /> Latest
-                  Articles ({campaign.content_structure.articles} included)
-                </h4>
-                <div className="p-3 bg-blue-50 text-sm rounded">
-                  Article Placeholder 1.
+            {(() => {
+              const articlesCount = Array.isArray(campaign?.content_structure?.articles)
+                ? campaign.content_structure.articles.length
+                : campaign?.content_structure?.articles ?? 0;
+              if (articlesCount <= 0) return null;
+              return (
+                <div className="mt-6 pt-4 border-t border-gray-100">
+                  <h4 className="font-bold text-lg text-gray-900 mb-3 flex items-center">
+                    <BookOpen className="w-5 h-5 mr-2 text-primary" /> Latest Articles ({articlesCount} included)
+                  </h4>
+                  <div className="p-3 bg-blue-50 text-sm rounded">
+                    Article Placeholder 1.
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
-            {campaign.content_structure.opportunities > 0 && (
+            {opportunitiesCount > 0 && (
               <div className="mt-6 pt-4 border-t border-gray-100">
                 <h4 className="font-bold text-lg text-gray-900 mb-3 flex items-center">
-                  <Gift className="w-5 h-5 mr-2 text-yellow-600" />{" "}
-                  Opportunities ({campaign.content_structure.opportunities}{" "}
-                  included)
+                  <Gift className="w-5 h-5 mr-2 text-yellow-600" /> Opportunities ({opportunitiesCount} included)
                 </h4>
                 <div className="p-3 bg-yellow-50 text-sm rounded">
                   Opportunity Placeholder 1.
@@ -361,7 +324,7 @@ const CampaignDetailPage = () => {
           <span className="font-semibold text-sm text-yellow-800">
             Mock Status Selector:
           </span>
-          {Object.keys(MOCK_CAMPAIGNS).map((id) => (
+          {Object.keys([]).map((id) => (
             <button
               key={id}
               onClick={() => setCampaignId(id)}
@@ -371,7 +334,7 @@ const CampaignDetailPage = () => {
                   : "bg-white text-gray-700 border border-gray-300 hover:bg-yellow-200"
               }`}
             >
-              {MOCK_CAMPAIGNS[id].status} Campaign ({id})
+              {campaign?.status} Campaign ({id})
             </button>
           ))}
         </div>
@@ -381,7 +344,7 @@ const CampaignDetailPage = () => {
           <div>
             <div className="flex items-center space-x-3">
               <h1 className="text-3xl font-extrabold text-gray-900">
-                {campaign.name}
+                {campaign?.name}
               </h1>
               <span
                 className={`text-sm font-bold py-1 px-3 rounded-full ${getStatusStyles(
@@ -392,11 +355,11 @@ const CampaignDetailPage = () => {
               </span>
             </div>
             <p className="text-gray-500 mt-1">
-              {status === "Sent"
+              {status === "sent"
                 ? `Sent on ${new Date(
-                    campaign.sent_at
+                    campaign?.sent_at ?? new Date()
                   ).toLocaleDateString()} at ${new Date(
-                    campaign.sent_at
+                    campaign?.sent_at ?? new Date()
                   ).toLocaleTimeString()}`
                 : `Current Status: ${status}`}
             </p>
@@ -413,50 +376,33 @@ const CampaignDetailPage = () => {
             {/* Summary Card */}
             <div className="p-5 bg-white rounded-xl shadow-xl border border-gray-100 space-y-4">
               <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                <Info className="w-5 h-5 mr-2 text-red-500" /> Core Campaign
-                Info
+                <Layers className="w-5 h-5 mr-2 text-primary" /> Campaign Summary
               </h2>
-              <p className="text-sm text-gray-600 border-b pb-3">
-                **Subject:**{" "}
-                <span className="font-semibold">{campaign.subject}</span>
-              </p>
-
               <div className="flex items-center text-sm text-gray-700">
-                <User className="w-4 h-4 mr-2 text-green-500" />
-                <span className="font-semibold">Audience:</span>
-                <span className="ml-2">{campaign.audience}</span>
-              </div>
+                  <Settings className="w-4 h-4 mr-2 text-primary" />
+                  <span className="font-semibold">Content:</span>
+                  <span className="ml-2">
+                    {articlesCount} Articles, {opportunitiesCount} Opportunities
+                  </span>
+                </div>
 
-              <div className="flex items-center text-sm text-gray-700">
-                <Settings className="w-4 h-4 mr-2 text-primary" />
-                <span className="font-semibold">Content:</span>
-                <span className="ml-2">
-                  {campaign.content_structure.articles} Articles,{" "}
-                  {campaign.content_structure.opportunities} Opportunities
-                </span>
-              </div>
-
-              {status === "Sent" && (
+              {status === "sent" && (
                 <div className="flex items-center text-sm text-gray-700">
                   <Clock className="w-4 h-4 mr-2 text-gray-500" />
                   <span className="font-semibold">Total Sent:</span>
                   <span className="ml-2">
-                    {campaign.emails_sent.toLocaleString()}
+                    {campaign?.emails_sent.toLocaleString()}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Dynamic Action Buttons (Mobile View) */}
             <div className="sm:hidden">{renderActionButtons()}</div>
           </div>
 
-          {/* Column 2 & 3: Dynamic Details and Preview */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Dynamic Status Panel (Analytics/Schedule Info/Draft Info) */}
             {renderDetailsPanel()}
 
-            {/* Email Preview */}
             <EmailPreviewPlaceholder />
           </div>
         </div>

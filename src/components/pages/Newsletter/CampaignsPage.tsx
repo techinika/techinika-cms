@@ -133,7 +133,7 @@ const CAMPAIGNS_PER_PAGE = 6;
 const STATUS_OPTIONS = ["All", "Completed", "Active", "Scheduled", "Draft"];
 
 const CampaignManagementPage = () => {
-  const [campaigns, setCampaigns] = useState<Campaign[]>(MOCK_CAMPAIGNS);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);

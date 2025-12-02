@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -55,7 +56,7 @@ const NewArticleEditorPage = () => {
   const [articleData, setArticleData] = useState(INITIAL_ARTICLE_STATE);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     const newSlug =
       name === "title"
@@ -172,9 +173,7 @@ const NewArticleEditorPage = () => {
             /> */}
           </div>
 
-          {/* RIGHT COLUMN: Metadata Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Status & Timing */}
             <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 space-y-4">
               <h3 className="font-bold text-lg text-gray-800 border-b pb-2 mb-3">
                 Publishing Status
@@ -276,7 +275,7 @@ const NewArticleEditorPage = () => {
                 <img
                   src={articleData.image}
                   alt="Featured Preview"
-                  onError={(e) => (e.target.style.display = "none")}
+                  
                   className="mt-2 w-full h-auto rounded-lg object-cover max-h-32"
                 />
               </label>
