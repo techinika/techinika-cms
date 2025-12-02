@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
   CornerUpLeft,
@@ -13,61 +13,78 @@ import { useRouter } from "next/navigation";
 import { handleTileClick } from "@/lib/functions";
 import { Tile } from "@/types/main";
 import { useAuth } from "@/lib/AuthContext";
-
-const MainTiles: Tile[] = [
-  {
-    id: "content",
-    title: "Content Drafting",
-    role: ["author", "admin"],
-    icon: Feather,
-    color: "bg-emerald-600",
-    stats: [
-      { label: "Drafts Ready", value: "5" },
-      { label: "Published Last Month", value: "12" },
-    ],
-    children: true,
-  },
-  {
-    id: "newsletter",
-    title: "Newsletter Studio",
-    role: ["author", "admin"],
-    icon: Send,
-    color: "bg-yellow-600",
-    stats: [
-      { label: "Subscribers", value: "7.5K" },
-      { label: "Open Rate", value: "45%" },
-    ],
-    children: true,
-  },
-  {
-    id: "system",
-    title: "System Management",
-    role: ["admin"],
-    icon: LayoutDashboard,
-    color: "bg-red-600",
-    stats: [
-      { label: "Total Entities", value: "240" },
-      { label: "Active Admins", value: "5" },
-    ],
-    children: true,
-  },
-  {
-    id: "techinika",
-    title: "Techinika",
-    role: ["manager", "admin"],
-    icon: Briefcase,
-    color: "bg-indigo-600",
-    stats: [
-      { label: "QTD Revenue", value: "$85K" },
-      { label: "Active Projects", value: "12" },
-    ],
-    children: true,
-  },
-];
+import { getArticlesStats } from "@/supabase/CRUD/GET/getNumbers";
+import { ContentStats } from "@/types/stats";
 
 const MainPage = () => {
   const auth = useAuth();
   const router = useRouter();
+  const [stats, setStats] = useState<ContentStats>({
+    totalArticles: 0,
+    monthlyArticles: 0,
+    drafts: 0,
+    totalSubscribers: 0,
+  });
+
+  useEffect(() => {
+    const getStats = async () => {
+      const data = await getArticlesStats();
+      setStats(data);
+    };
+
+    getStats();
+  }, []);
+
+  const MainTiles: Tile[] = [
+    {
+      id: "content",
+      title: "Content Drafting",
+      role: ["author", "admin"],
+      icon: Feather,
+      color: "bg-emerald-600",
+      stats: [
+        { label: "All Articles", value: `${stats?.totalArticles}` },
+        { label: "Published Last Month", value: `${stats?.monthlyArticles}` },
+      ],
+      children: true,
+    },
+    {
+      id: "newsletter",
+      title: "Newsletter Studio",
+      role: ["author", "admin"],
+      icon: Send,
+      color: "bg-yellow-600",
+      stats: [
+        { label: "Subscribers", value: `${stats?.totalSubscribers}` },
+        { label: "Open Rate", value: "45%" },
+      ],
+      children: true,
+    },
+    {
+      id: "system",
+      title: "System Management",
+      role: ["admin"],
+      icon: LayoutDashboard,
+      color: "bg-red-600",
+      stats: [
+        { label: "Total Entities", value: "240" },
+        { label: "Active Admins", value: "5" },
+      ],
+      children: true,
+    },
+    {
+      id: "techinika",
+      title: "Techinika",
+      role: ["manager", "admin"],
+      icon: Briefcase,
+      color: "bg-indigo-600",
+      stats: [
+        { label: "QTD Revenue", value: "$85K" },
+        { label: "Active Projects", value: "12" },
+      ],
+      children: true,
+    },
+  ];
 
   const filteredTiles = useMemo(() => {
     const tiles = MainTiles || [];

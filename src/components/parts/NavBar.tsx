@@ -5,7 +5,13 @@ import { ChevronDown, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-export const Navbar = ({ user, role }: { user: UserType | null; role: string | null }) => {
+export const Navbar = ({
+  user,
+  role,
+}: {
+  user: UserType | null;
+  role: string | null;
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleLogout = () => {
@@ -15,14 +21,12 @@ export const Navbar = ({ user, role }: { user: UserType | null; role: string | n
 
   const handleProfileClick = () => {
     setIsDropdownOpen(false);
-    alert("Navigating to User Profile Management page.");
   };
 
   return (
     <nav className="w-full bg-white shadow-md border-b border-gray-100 sticky top-0 z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="flex-shrink-0">
             <span className="text-2xl font-black text-primary tracking-tight">
               Techinika
@@ -35,7 +39,9 @@ export const Navbar = ({ user, role }: { user: UserType | null; role: string | n
               className="flex items-center space-x-3 pl-3 py-2 my-2 rounded-md hover:bg-gray-100 transition duration-150 focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-gray-700">{user?.email}</p>
+                <p className="text-sm font-medium text-gray-700">
+                  {user?.email}
+                </p>
                 <p className="text-xs text-gray-400 capitalize">{role}</p>
               </div>
               <div className="rounded-full overflow-hidden w-10 h-10 ring-2 ring-primary/50 flex-shrink-0">
@@ -64,20 +70,12 @@ export const Navbar = ({ user, role }: { user: UserType | null; role: string | n
                 <Link
                   href={`${process.env.NEXT_PUBLIC_AUTH_URL}/status`}
                   target="_blank"
-                  onClick={handleProfileClick}
                   className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-primary transition duration-150"
                 >
                   <User className="h-4 w-4 mr-2" />
                   Manage User Profile
                 </Link>
                 <div className="border-t border-gray-100 my-1"></div>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition duration-150"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </button>
               </div>
             )}
           </div>
