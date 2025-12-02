@@ -28,7 +28,7 @@ export async function getUserOrganizations(userId: string) {
       .eq("company_id", companyId);
 
     results.push({
-      company: item.companies,
+      company: item.featured_startups,
       role: item.role,
       note: item.note,
       opportunities: opportunities ?? 0,
