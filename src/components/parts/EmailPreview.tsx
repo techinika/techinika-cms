@@ -60,7 +60,7 @@ export const EmailPreview = ({
   if (templateMode === "plain") {
     return (
       <div className="p-8 bg-gray-50 rounded-xl border border-gray-300 shadow-inner min-h-[500px]">
-        <p className="font-mono text-xs text-gray-500 mb-4 border-b pb-2">
+        <p className="text-xs text-gray-500 mb-4 border-b pb-2">
           Plain Text Preview
         </p>
         <pre className="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">

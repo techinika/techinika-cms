@@ -23,7 +23,7 @@ const SubPageTemplate = ({
     const tiles = tilesToUse || [];
 
     return tiles.filter((tile: Tile) => tile.role.includes(auth?.role ?? ""));
-  }, []);
+  }, [auth]);
 
   if (filteredTiles.length === 0) {
     return (
