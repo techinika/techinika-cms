@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Layout from "@/components/dashboard/Layout";
 
 export const metadata: Metadata = {
   title: "Techinika CMS",
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>{children}</body>
+      <body className={`antialiased`}>
+        <Layout>{children}</Layout>
+      </body>
     </html>
   );
 }

@@ -1,10 +1,10 @@
-import MainPage from "@/components/pages/MainPage";
+import NewCampaignPage from "@/components/pages/Newsletter/NewCampaignPage";
 import React from "react";
 
 function page() {
   return (
     <div>
-      <MainPage />
+      <NewCampaignPage />
     </div>
   );
 }

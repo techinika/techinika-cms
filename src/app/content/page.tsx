@@ -1,10 +1,10 @@
-import MainPage from "@/components/pages/MainPage";
+import ContentPage from "@/components/pages/ContentPage";
 import React from "react";
 
 function page() {
   return (
     <div>
-      <MainPage />
+      <ContentPage />
     </div>
   );
 }

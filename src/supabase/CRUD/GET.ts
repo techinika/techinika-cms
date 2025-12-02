@@ -1,74 +1,124 @@
+import {
+  Category,
+  JoinedArticle,
+  ResourceCategory,
+  ResourceFile,
+  Subscriber,
+} from "@/types/main";
 import supabase, { supabaseAdminClient } from "../supabase";
 
-export async function fetchArticles({ query = "", status = "all" }) {
+export const getArticles = async (): Promise<JoinedArticle[]> => {
   try {
-    let articlesQuery = supabase
+    const { data, error } = await supabase
       .from("articles")
-      .select("slug, title, status, created_at, views");
-
-    if (query) {
-      articlesQuery = articlesQuery.ilike("title", `%${query}%`);
-    }
-
-    if (status && status !== "all") {
-      articlesQuery = articlesQuery.eq("status", status);
-    }
-
-    const { data: articles, error } = await articlesQuery.order("created_at", {
-      ascending: false,
-    });
+      .select(
+        `
+        *,
+        author:authors!author_id (
+          id,
+          name,
+          image_url,
+          created_at,
+          lang,
+          bio,
+          external_link,
+          username
+        ),
+        category:categories (
+          id,
+          name
+        )
+      `
+      )
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching articles:", error.message);
-      return { success: false, data: [], error: error.message };
+      console.error("Error fetching articles:", error);
+      return [];
     }
 
-    return { success: true, data: articles, error: null };
-  } catch (error) {
-    console.error(
-      "An unexpected error occurred while fetching articles:",
-      error
-    );
-    return { success: false, data: [], error: "An unexpected error occurred." };
-  }
-}
-
-export async function fetchAuthorsWithEmails() {
-  try {
-    const { data: users, error: usersError } =
-      await supabaseAdminClient.auth.admin.listUsers();
-
-    if (usersError) {
-      throw new Error(usersError.message);
-    }
-
-    const usersMap = new Map();
-    for (const user of users.users) {
-      usersMap.set(user.id, user);
-    }
-
-    const { data: authors, error: authorsError } = await supabase
-      .from("authors")
-      .select("*");
-
-    if (authorsError) {
-      throw new Error(authorsError.message);
-    }
-
-    const authorsWithEmails = authors.map((author) => {
-      const user = usersMap.get(author.id);
-      return {
-        ...author,
-        email: user ? user.email : "Email not found",
-      };
-    });
-
-    return { data: authorsWithEmails, error: null };
+    return data as unknown as JoinedArticle[];
   } catch (err) {
-    console.error("Error fetching authors:", err);
-    return {
-      data: null,
-      error: err instanceof Error ? err.message : String(err),
-    };
+    console.error("An unexpected error occurred:", err);
+    return [];
   }
-}
+};
+
+export const getSubscribers = async (): Promise<Subscriber[]> => {
+  try {
+    const { data, error } = await supabase
+      .from("subscribers")
+      .select()
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Error fetching subscribers:", error);
+      return [];
+    }
+
+    console.log(data, error);
+
+    return data as unknown as Subscriber[];
+  } catch (err) {
+    console.error("An unexpected error occurred:", err);
+    return [];
+  }
+};
+
+export const getCategories = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id, name, created_at")
+      .order("name", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching categories:", error);
+      return [];
+    }
+
+    return data as Category[];
+  } catch (err) {
+    console.error("An unexpected error occurred:", err);
+    return [];
+  }
+};
+
+export const getResources = async (buckets: string[]) => {
+  try {
+    const allResults = await Promise.all(
+      buckets.map(async (bucket) => {
+        const { data, error } = await supabaseAdminClient.storage
+          .from(bucket)
+          .list("", {
+            limit: 1000,
+            sortBy: { column: "name", order: "asc" },
+          });
+
+        if (error) {
+          console.error(`Error fetching from ${bucket}:`, error.message);
+          return [];
+        }
+
+        return (
+          data?.map((item) => ({
+            ...item,
+            category: bucket,
+            url: supabase.storage.from(bucket).getPublicUrl(item.name).data
+              .publicUrl,
+          })) || []
+        );
+      })
+    );
+
+    const flattened = allResults.flat();
+
+    console.log(flattened);
+
+    flattened.sort((a, b) => a.name.localeCompare(b.name));
+
+    return flattened;
+  } catch (err) {
+    console.error("Unexpected error fetching resources:", err);
+    return [];
+  }
+};
