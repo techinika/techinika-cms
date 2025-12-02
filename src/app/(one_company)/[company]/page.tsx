@@ -1,10 +1,11 @@
 import IndexPage from "@/components/pages/OneCompany/IndexPage";
 import React from "react";
 
-function page() {
+async function page({ params }: { params: Promise<{ company: string }> }) {
+  const { company } = await params;
   return (
     <div>
-      <IndexPage />
+      <IndexPage companySlug={company} />
     </div>
   );
 }
