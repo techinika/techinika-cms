@@ -16,8 +16,9 @@ import { Category, JoinedArticle } from "@/types/main";
 import { ArticleList } from "@/components/parts/ArticlesList";
 import { AnalyticsCard } from "@/components/parts/AnalyticsCard";
 import Loading from "@/app/loading";
-import { getArticles, getCategories } from "@/supabase/CRUD/GET";
+import { getCategories } from "@/supabase/CRUD/GET";
 import { useAuth } from "@/lib/AuthContext";
+import { getArticles } from "@/supabase/CRUD/GET/getArticle";
 
 const ARTICLE_STATUSES = ["published", "draft", "archived", "cancelled"];
 
