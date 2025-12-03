@@ -1,11 +1,11 @@
-import React from 'react';
+import { OpportunitiesPage } from "@/components/pages/OneCompany/OpportunityPage";
 
 function page() {
-    return (
-        <div>
-            
-        </div>
-    );
+  return (
+    <div>
+      <OpportunitiesPage />
+    </div>
+  );
 }
 
 export default page;

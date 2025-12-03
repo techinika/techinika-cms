@@ -1,11 +1,12 @@
-import React from 'react';
+import { UsersPage } from "@/components/pages/OneCompany/UsersPage";
+import React from "react";
 
 function page() {
-    return (
-        <div>
-            
-        </div>
-    );
+  return (
+    <div>
+      <UsersPage />
+    </div>
+  );
 }
 
 export default page;

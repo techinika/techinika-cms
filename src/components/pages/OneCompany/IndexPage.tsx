@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { getCompanyStats } from "@/supabase/CRUD/GET/getStats";
 import { CompanyStats } from "@/types/stats";
 import Loading from "@/app/loading";
+import { decodeSlug } from "@/lib/functions";
 
 const IndexPage = ({ companySlug }: { companySlug: string }) => {
   const [companyStats, setCompanyStats] = useState<CompanyStats | null>(null);
@@ -88,7 +89,9 @@ const IndexPage = ({ companySlug }: { companySlug: string }) => {
 
   if (loading) return <Loading />;
 
-  return <SubPageTemplate tilesToUse={CompanyTiles} page="Company A" />;
+  return (
+    <SubPageTemplate tilesToUse={CompanyTiles} page={decodeSlug(companySlug)} />
+  );
 };
 
 export default IndexPage;

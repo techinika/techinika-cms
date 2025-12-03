@@ -47,3 +47,11 @@ export const getStatusStyles = (status: string) => {
       return "bg-gray-100 text-gray-700 border-gray-400";
   }
 };
+
+export const decodeSlug = (slug: string) => {
+  return slug
+    .replace(/-/g, " ") // replace dashes with spaces
+    .replace(/\s+/g, " ") // normalize spacing
+    .trim() // clean edges
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize each word
+};
