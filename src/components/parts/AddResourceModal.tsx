@@ -72,7 +72,7 @@ export const AddResourceModal = ({
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg">
         <div className="flex justify-between items-center p-6 border-b border-gray-100">
           <h2 className="text-xl font-bold text-gray-800 flex items-center">
-            <Upload className="w-5 h-5 mr-2 text-blue-700" /> Add New Resource
+            <Upload className="w-5 h-5 mr-2 text-primary" /> Add New Resource
           </h2>
           <button
             onClick={onClose}
@@ -171,7 +171,7 @@ export const AddResourceModal = ({
             <button
               type="submit"
               disabled={isSaving}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-md hover:bg-blue-800 transition disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-blue-800 transition disabled:opacity-50"
             >
               {isSaving ? "Saving..." : "Add Resource"}
             </button>

@@ -8,7 +8,7 @@ export const TagDisplay = ({ tagsString }: { tagsString: string }) => {
       {tags.map((tag, index) => (
         <span
           key={index}
-          className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 rounded-full"
+          className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-primary rounded-full"
         >
           {tag}
         </span>

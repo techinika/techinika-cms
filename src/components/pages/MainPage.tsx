@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { LayoutDashboard, CornerUpLeft, Feather, Send } from "lucide-react";
+import {
+  LayoutDashboard,
+  CornerUpLeft,
+  Feather,
+  Send,
+  Plus,
+} from "lucide-react";
 import { DashboardTile } from "../parts/DashboardTile";
 import { useRouter } from "next/navigation";
 import { handleTileClick } from "@/lib/functions";
@@ -93,6 +99,8 @@ const MainPage = () => {
     return tiles.filter((tile: Tile) => tile.role.includes(auth?.role ?? ""));
   }, [auth?.role, stats, companies]);
 
+  if (loading) return <Loading />;
+
   if (filteredTiles.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 md:p-10 flex flex-col items-center justify-center">
@@ -110,13 +118,12 @@ const MainPage = () => {
   }
 
   if (!auth) return <Loading />;
-  if (loading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <header className="mb-8">
-          <h1 className="text-3xl font-extrabold text-tech-dark">
+          <h1 className="text-3xl font-bold text-tech-dark">
             Welcome back, {auth?.user?.email}!
             <span className="text-xl font-semibold text-gray-500 ml-3 capitalize">
               ({auth?.role})
@@ -140,6 +147,15 @@ const MainPage = () => {
                 onClick={() => handleTileClick(tile)}
               />
             ))}
+            {auth?.role.toLowerCase() === "manager" && (
+              <div className="p-6 rounded-xl shadow-lg bg-white border border-gray-200 hover:border-primary transition-all duration-300 transform hover:scale-[1.01] hover:shadow-xl w-full h-full flex items-center justify-center flex-col cursor-pointer">
+                <Plus className="h-15 w-15 text-primary" />
+
+                <p className="text-xl font-bold text-primary mb-4">
+                  Add a New Company
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center p-12 bg-white rounded-xl shadow-lg border border-gray-200">

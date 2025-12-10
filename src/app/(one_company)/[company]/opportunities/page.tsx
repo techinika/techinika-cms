@@ -1,9 +1,11 @@
 import { OpportunitiesPage } from "@/components/pages/OneCompany/OpportunityPage";
 
-function page() {
+async function page({ params }: { params: Promise<{ company: string }> }) {
+  const { company } = await params;
+
   return (
     <div>
-      <OpportunitiesPage />
+      <OpportunitiesPage companySlug={company} />
     </div>
   );
 }

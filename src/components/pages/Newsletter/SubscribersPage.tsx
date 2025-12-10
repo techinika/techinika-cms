@@ -101,7 +101,6 @@ const SubscriberManagementPage = () => {
       setLoading(true);
       try {
         const data = await getSubscribers();
-        console.log(data);
         setSubscribers(data);
       } catch (error) {
         console.log(error);
@@ -165,12 +164,12 @@ const SubscriberManagementPage = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10">
       <div className="page">
         <Breadcrumb />
 
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900">
             Email Subscribers
           </h1>
           <p className="text-gray-500 mt-1">

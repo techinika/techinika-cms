@@ -53,7 +53,7 @@ const ArticleAnalytics = ({ articles }: { articles: JoinedArticle[] }) => {
         icon={Feather}
         title="Total Articles"
         value={analytics.total}
-        color="bg-blue-600"
+        color="bg-primary"
       />
       <AnalyticsCard
         icon={BookOpen}
@@ -160,7 +160,7 @@ export const ArticleManagementPage = () => {
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900">
             Articles Management
           </h1>
           <p className="text-gray-500 mt-1">
@@ -195,11 +195,10 @@ export const ArticleManagementPage = () => {
           </div>
         </div>
 
-        {/* Filter by Status */}
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+          className="block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary/80 p-2.5"
         >
           <option value="all">All Statuses</option>
           {statusesList.map((status) => (
@@ -209,7 +208,6 @@ export const ArticleManagementPage = () => {
           ))}
         </select>
 
-        {/* Filter by Category */}
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}

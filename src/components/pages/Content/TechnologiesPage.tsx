@@ -160,19 +160,18 @@ const TechnologyManagementPage = () => {
       );
     }
 
-    // Reset pagination when filters change
     setCurrentPage(1);
 
     return filtered;
   }, [technologies, searchTerm, filterLang, filterTag]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Breadcrumb />
 
         <div className="mb-6">
-          <h1 className="text-3xl font-extrabold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900">
             Technology Management
           </h1>
           <p className="text-gray-500 mt-1">

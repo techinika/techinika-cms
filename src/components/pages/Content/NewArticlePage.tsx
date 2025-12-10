@@ -56,7 +56,7 @@ const NewArticleEditorPage = () => {
   const [articleData, setArticleData] = useState(INITIAL_ARTICLE_STATE);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleInputChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
     const newSlug =
       name === "title"
@@ -101,12 +101,12 @@ const NewArticleEditorPage = () => {
     "N/A";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10">
       <div className="max-w-7xl mx-auto sm:p-4">
         <Breadcrumb />
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
-            <h1 className="text-3xl font-extrabold text-gray-900 ml-3">
+            <h1 className="text-3xl font-bold text-gray-900 ml-3">
               {articleData.title ? articleData.title : "New Article Draft"}
             </h1>
           </div>
@@ -123,7 +123,7 @@ const NewArticleEditorPage = () => {
             <button
               onClick={() => handleAction("Publish")}
               disabled={isSaving}
-              className="flex items-center px-6 py-2 bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition disabled:opacity-50"
+              className="flex items-center px-6 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 transition disabled:opacity-50"
             >
               <Send className="w-5 h-5 mr-2" />
               {isSaving ? "Publishing..." : "Publish Article"}
@@ -144,7 +144,7 @@ const NewArticleEditorPage = () => {
                   name="title"
                   value={articleData.title}
                   onChange={handleInputChange}
-                  className="mt-2 block w-full text-3xl font-extrabold p-3 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-blue-500 transition"
+                  className="mt-2 block w-full text-3xl font-bold p-3 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-blue-500 transition"
                   placeholder="Enter a compelling article title"
                 />
               </label>
@@ -275,7 +275,6 @@ const NewArticleEditorPage = () => {
                 <img
                   src={articleData.image}
                   alt="Featured Preview"
-                  
                   className="mt-2 w-full h-auto rounded-lg object-cover max-h-32"
                 />
               </label>

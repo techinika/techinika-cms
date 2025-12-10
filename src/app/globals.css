@@ -5,7 +5,7 @@
 @plugin "@tailwindcss/typography";
 
 * {
-  font-family: "Work Sans", sans-serif;
+  font-family: "Work Sans", sans-serif !important;
 }
 
 @theme inline {

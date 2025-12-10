@@ -22,7 +22,7 @@ export const ResourceCard = ({ resource }: { resource: ResourceFile }) => {
       break;
     case type !== "image" && type !== "video":
       Icon = FileText;
-      iconColor = "text-blue-600 bg-blue-50";
+      iconColor = "text-primary bg-blue-50";
       break;
     default:
       Icon = HardDrive;
@@ -50,7 +50,7 @@ export const ResourceCard = ({ resource }: { resource: ResourceFile }) => {
       <div className="flex items-center space-x-2 text-xs text-gray-500">
         <span className="capitalize">{resource?.metadata?.mimetype}</span>
         <span className="h-1 w-1 rounded-full bg-gray-300"></span>
-        <span className="font-medium text-blue-700">{resource.category}</span>
+        <span className="font-medium text-primary">{resource.category}</span>
       </div>
 
       <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between">
@@ -58,7 +58,7 @@ export const ResourceCard = ({ resource }: { resource: ResourceFile }) => {
           href={resource.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium text-blue-600 hover:text-blue-800 transition"
+          className="text-sm font-medium text-primary hover:text-blue-800 transition"
         >
           View
         </Link>

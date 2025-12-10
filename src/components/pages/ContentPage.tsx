@@ -24,7 +24,7 @@ const CompanyTiles: Tile[] = [
     title: "Resource Library",
     role: ["author", "admin"],
     icon: Briefcase,
-    color: "bg-indigo-600",
+    color: "bg-primary",
     stats: [
       { label: "Unused", value: "450" },
       { label: "New (7d)", value: "25" },

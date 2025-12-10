@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
@@ -107,7 +107,7 @@ const FilterInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-sm transition duration-150"
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150"
       />
       {Icon && (
         <Icon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -122,7 +122,7 @@ const FilterSelect = ({ label, value, onChange, options }) => (
     <select
       value={value}
       onChange={onChange}
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm transition duration-150 appearance-none"
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150 appearance-none"
     >
       <option value="">All</option>
       {options.map((option) => (
@@ -270,7 +270,7 @@ export const EventsPage = () => {
     if (loading) {
       return (
         <tr className="bg-gray-50">
-          <td colSpan="7" className="py-12 text-center text-indigo-600">
+          <td colSpan="7" className="py-12 text-center text-primary">
             <Loader2 className="w-6 h-6 animate-spin inline-block mr-2" />
             Loading events...
           </td>
@@ -305,7 +305,7 @@ export const EventsPage = () => {
       return (
         <tr
           key={event.id}
-          className="group border-b border-gray-100 hover:bg-indigo-50 transition duration-150 cursor-pointer"
+          className="group border-b border-gray-100 hover:bg-blue-50 transition duration-150 cursor-pointer"
           onClick={() => handleRowClick(event.id)}
         >
           <td className="px-6 py-4 text-sm font-medium text-gray-900 truncate max-w-xs">
@@ -322,7 +322,7 @@ export const EventsPage = () => {
               {event.location}
             </div>
           </td>
-          <td className="px-6 py-4 text-sm text-gray-700 font-mono whitespace-nowrap">
+          <td className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
             {eventDate.toLocaleDateString()}
             <span className="block text-xs text-gray-500">
               {eventDate.toLocaleTimeString([], {
@@ -355,7 +355,7 @@ export const EventsPage = () => {
             </span>
           </td>
           <td className="px-6 py-4 text-right">
-            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition duration-150 ml-auto" />
+            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition duration-150 ml-auto" />
           </td>
         </tr>
       );
@@ -363,19 +363,19 @@ export const EventsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 font-[Inter]">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Breadcrumb */}
         <Breadcrumb />
 
         {/* Header & New Button */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-extrabold text-gray-900">
+          <h1 className="text-4xl font-bold text-gray-900">
             Events Management
           </h1>
           <button
             onClick={handleNewEvent}
-            className="flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-[1.02]"
+            className="flex items-center px-4 py-2 bg-primary text-white font-semibold rounded-xl shadow-md hover:bg-primary transition duration-300 transform hover:scale-[1.02]"
             disabled={!isAuthenticated}
           >
             <Plus className="w-5 h-5 mr-2" />
@@ -392,7 +392,7 @@ export const EventsPage = () => {
             title="Total Events"
             value={analytics.total}
             icon={Calendar}
-            color="text-indigo-600"
+            color="text-primary"
           />
           <StatCard
             title="Upcoming Events"
@@ -410,7 +410,7 @@ export const EventsPage = () => {
             title="Overall Fill Rate"
             value={analytics.overallFillRate}
             icon={TrendingUp}
-            color="text-purple-600"
+            color="text-primary"
           />
         </div>
 
@@ -518,7 +518,7 @@ export const EventsPage = () => {
                 Previous
               </button>
               {/* Simple Page Indicator */}
-              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium">
+              <span className="px-3 py-1 bg-blue-50 text-primary rounded-lg text-sm font-medium">
                 {currentPage} / {totalPages}
               </span>
               <button

@@ -88,7 +88,7 @@ const STATUS_OPTIONS = [
     value: "Duplicate",
     label: "Duplicate",
     icon: RotateCcw,
-    color: "text-purple-600",
+    color: "text-primary",
   },
   { value: "Empty", label: "Empty", icon: Trash2, color: "text-gray-500" },
 ];
@@ -115,7 +115,7 @@ const getStatusBadge = (status: string) => {
       };
     case "Duplicate":
       return {
-        style: "bg-purple-100 text-purple-700",
+        style: "bg-blue-100 text-primary",
         icon: RotateCcw,
         label: "Duplicate",
       };
@@ -188,7 +188,7 @@ const ContactQueriesDashboard = () => {
                         : query.feedback === "Spam"
                         ? "border-yellow-400 bg-yellow-50 text-yellow-700"
                         : query.feedback === "Duplicate"
-                        ? "border-purple-400 bg-purple-50 text-purple-700"
+                        ? "border-blue-400 bg-blue-50 text-primary"
                         : "border-gray-400 bg-gray-50 text-gray-700"
                     }`}
       >
@@ -252,7 +252,7 @@ const ContactQueriesDashboard = () => {
                         {query.name}
                       </div>
                       <div
-                        className="text-xs text-blue-600 hover:text-blue-700 truncate"
+                        className="text-xs text-primary hover:text-primary truncate"
                         title={query.email}
                       >
                         {query.email}
@@ -282,7 +282,7 @@ const ContactQueriesDashboard = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleExpandQuery(query.id)}
-                        className="text-blue-600 hover:text-blue-800 transition duration-150 text-xs font-bold"
+                        className="text-primary hover:text-blue-800 transition duration-150 text-xs font-bold"
                       >
                         {isExpanded ? "Collapse" : "View Message"}
                       </button>
@@ -292,7 +292,7 @@ const ContactQueriesDashboard = () => {
                     <tr className="bg-blue-50/50">
                       <td colSpan={4} className="p-6">
                         <div className="font-semibold text-gray-800 mb-2 flex items-center">
-                          <Users className="w-4 h-4 mr-2 text-blue-600" /> Full
+                          <Users className="w-4 h-4 mr-2 text-primary" /> Full
                           Message:
                         </div>
                         <div className="p-4 bg-white rounded-lg border border-blue-200 text-sm text-gray-700 whitespace-pre-wrap">
@@ -315,13 +315,13 @@ const ContactQueriesDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10">
       <div className="page">
         <Breadcrumb />
 
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-extrabold text-gray-900 flex items-center">
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
               <Mail className="w-7 h-7 mr-2 text-red-600" /> Contact Query Inbox
             </h1>
             <p className="text-gray-500 mt-1">
@@ -349,7 +349,7 @@ const ContactQueriesDashboard = () => {
                   <option.icon
                     className={`w-4 h-4 mr-1 ${
                       filterStatus === option.value
-                        ? "text-blue-600"
+                        ? "text-primary"
                         : option.color
                     }`}
                   />

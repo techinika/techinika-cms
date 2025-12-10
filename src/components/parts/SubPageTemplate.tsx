@@ -34,8 +34,7 @@ const SubPageTemplate = ({
             No Dashboard Items Found
           </h1>
           <p className="mt-2 text-gray-600">
-            Your role ({auth?.role}) currently has no active management
-            tiles.
+            Your role ({auth?.role}) currently has no active management tiles.
           </p>
         </div>
       </div>
@@ -47,7 +46,7 @@ const SubPageTemplate = ({
       <main className="page py-10">
         <Breadcrumb />
         <header className="mb-5">
-          <h1 className="text-3xl font-extrabold text-tech-dark">
+          <h1 className="text-3xl font-bold text-tech-dark">
             {`You are now managing the ${page}`}!
           </h1>
           <p className="text-gray-500 mt-1">

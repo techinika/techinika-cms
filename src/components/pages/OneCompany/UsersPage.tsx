@@ -9,7 +9,6 @@ import {
   Search,
   Plus,
   Loader2,
-  Database,
   AlertTriangle,
   ArrowRight,
   X,
@@ -17,55 +16,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-
-const MOCK_COMPANY_USERS = [
-  {
-    id: "u1",
-    name: "Alice Johnson",
-    email: "alice@company.com",
-    role: "Manager",
-    status: "Active",
-    joined_at: "2020-01-15",
-  },
-  {
-    id: "u2",
-    name: "Bob Smith",
-    email: "bob@company.com",
-    role: "Employee",
-    status: "Active",
-    joined_at: "2021-03-20",
-  },
-  {
-    id: "u3",
-    name: "Charlie Brown",
-    email: "charlie@company.com",
-    role: "Employee",
-    status: "Inactive",
-    joined_at: "2022-07-01",
-  },
-  {
-    id: "u4",
-    name: "Diana Prince",
-    email: "diana@company.com",
-    role: "Manager",
-    status: "Active",
-    joined_at: "2019-11-10",
-  },
-  {
-    id: "u5",
-    name: "Eve Adams",
-    email: "eve@company.com",
-    role: "Employee",
-    status: "Active",
-    joined_at: "2023-05-25",
-  },
-];
-
-const MOCK_NEW_USER_OPTIONS = [
-  { id: "nu1", name: "Frank Miller", email: "frank@external.com" },
-  { id: "nu2", name: "Grace Lee", email: "grace@external.com" },
-  { id: "nu3", name: "Henry Jones", email: "henry@external.com" },
-];
+import { UserType } from "@/types/users";
 
 const ROLES = ["Manager", "Employee"];
 const STATUSES = ["Active", "Inactive"];
@@ -91,7 +42,7 @@ const FilterInput = ({ label, value, onChange, icon: Icon, placeholder }) => (
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-sm transition duration-150"
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150"
       />
       {Icon && (
         <Icon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -106,7 +57,7 @@ const FilterSelect = ({ label, value, onChange, options }) => (
     <select
       value={value}
       onChange={onChange}
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm transition duration-150 appearance-none"
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150 appearance-none"
     >
       <option value="">All</option>
       {options.map((option) => (
@@ -162,7 +113,7 @@ const AddUserModal = ({ isOpen, onClose, onAddUser, existingUsers }) => {
         {/* Modal Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-100">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-            <User className="w-5 h-5 mr-2 text-indigo-500" />
+            <User className="w-5 h-5 mr-2 text-blue-500" />
             Add New Company User
           </h2>
           <button
@@ -198,7 +149,7 @@ const AddUserModal = ({ isOpen, onClose, onAddUser, existingUsers }) => {
                     setSelectedUserId(e.target.value);
                     setMessage("");
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-indigo-500 focus:border-indigo-500 text-base transition appearance-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-base transition appearance-none"
                 >
                   <option value="">-- Choose a user --</option>
                   {availableUsers.map((user) => (
@@ -220,7 +171,7 @@ const AddUserModal = ({ isOpen, onClose, onAddUser, existingUsers }) => {
                     setSelectedRole(e.target.value);
                     setMessage("");
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-indigo-500 focus:border-indigo-500 text-base transition appearance-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-base transition appearance-none"
                 >
                   {ROLES.map((role) => (
                     <option key={role} value={role}>
@@ -244,7 +195,7 @@ const AddUserModal = ({ isOpen, onClose, onAddUser, existingUsers }) => {
           <button
             onClick={handleSubmit}
             disabled={!selectedUserId || availableUsers.length === 0}
-            className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 disabled:opacity-50"
+            className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary transition duration-150 disabled:opacity-50"
           >
             Confirm Add User
           </button>
@@ -254,10 +205,8 @@ const AddUserModal = ({ isOpen, onClose, onAddUser, existingUsers }) => {
   );
 };
 
-// --- Main Component ---
-
 export const UsersPage = () => {
-  const [companyUsers, setCompanyUsers] = useState([]);
+  const [companyUsers, setCompanyUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -266,7 +215,6 @@ export const UsersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // Filter states
   const [nameEmailFilter, setNameEmailFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -274,7 +222,6 @@ export const UsersPage = () => {
   const filteredUsers = useMemo(() => {
     let filtered = companyUsers;
 
-    // 1. Name/Email Filter
     if (nameEmailFilter) {
       const search = nameEmailFilter.toLowerCase();
       filtered = filtered.filter(
@@ -283,13 +230,10 @@ export const UsersPage = () => {
           user.email.toLowerCase().includes(search)
       );
     }
-
-    // 2. Role Filter
     if (roleFilter) {
       filtered = filtered.filter((user) => user.role === roleFilter);
     }
 
-    // 3. Status Filter
     if (statusFilter) {
       filtered = filtered.filter((user) => user.status === statusFilter);
     }
@@ -366,7 +310,7 @@ export const UsersPage = () => {
     if (loading) {
       return (
         <tr className="bg-gray-50">
-          <td colSpan="5" className="py-12 text-center text-indigo-600">
+          <td colSpan="5" className="py-12 text-center text-primary">
             <Loader2 className="w-6 h-6 animate-spin inline-block mr-2" />
             Loading company users...
           </td>
@@ -388,7 +332,7 @@ export const UsersPage = () => {
     return paginatedUsers.map((user) => (
       <tr
         key={user.id}
-        className="group border-b border-gray-100 hover:bg-indigo-50 transition duration-150 cursor-pointer"
+        className="group border-b border-gray-100 hover:bg-blue-50 transition duration-150 cursor-pointer"
         onClick={() => handleRowClick(user.id)}
       >
         <td className="px-6 py-4">
@@ -407,8 +351,8 @@ export const UsersPage = () => {
           <span
             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
               user.role === "Manager"
-                ? "bg-purple-100 text-purple-800"
-                : "bg-indigo-100 text-indigo-800"
+                ? "bg-blue-100 text-blue-800"
+                : "bg-blue-100 text-blue-800"
             }`}
           >
             {user.role}
@@ -425,18 +369,18 @@ export const UsersPage = () => {
             {user.status}
           </span>
         </td>
-        <td className="px-6 py-4 text-sm text-gray-500 font-mono">
+        <td className="px-6 py-4 text-sm text-gray-500">
           Joined: {new Date(user.joined_at).toLocaleDateString()}
         </td>
         <td className="px-6 py-4 text-right">
-          <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition duration-150 ml-auto" />
+          <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition duration-150 ml-auto" />
         </td>
       </tr>
     ));
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8 font-[Inter]">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Modal */}
         <AddUserModal
@@ -451,12 +395,10 @@ export const UsersPage = () => {
 
         {/* Header & New Button */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-extrabold text-gray-900">
-            User Management
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900">User Management</h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-[1.02]"
+            className="flex items-center px-4 py-2 bg-primary text-white font-semibold rounded-xl shadow-md hover:bg-primary transition duration-300 transform hover:scale-[1.02]"
             disabled={!isAuthenticated}
           >
             <Plus className="w-5 h-5 mr-2" />
@@ -473,19 +415,19 @@ export const UsersPage = () => {
             title="Total Users"
             value={analytics.total}
             icon={Users}
-            color="text-indigo-600"
+            color="text-primary"
           />
           <StatCard
             title="Managers"
             value={analytics.managers}
             icon={Briefcase}
-            color="text-purple-600"
+            color="text-primary"
           />
           <StatCard
             title="Employees"
             value={analytics.employees}
             icon={User}
-            color="text-blue-600"
+            color="text-primary"
           />
           <StatCard
             title="Active Users"
@@ -583,7 +525,7 @@ export const UsersPage = () => {
                 Previous
               </button>
               {/* Simple Page Indicator */}
-              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium">
+              <span className="px-3 py-1 bg-blue-50 text-primary rounded-lg text-sm font-medium">
                 {currentPage} / {totalPages}
               </span>
               <button

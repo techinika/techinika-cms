@@ -57,7 +57,7 @@ const MainTiles: Tile[] = [
     title: "Manage System Users",
     role: ["admin"],
     icon: Users,
-    color: "bg-indigo-600",
+    color: "bg-primary",
     stats: [
       { label: "Total", value: "188" },
       { label: "New (7d)", value: "8" },
