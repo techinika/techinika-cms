@@ -1,11 +1,13 @@
-import React from 'react';
+import { OpportunitiesPage } from "@/components/pages/OneCompany/OpportunityPage";
 
-function page() {
-    return (
-        <div>
-            
-        </div>
-    );
+async function page({ params }: { params: Promise<{ company: string }> }) {
+  const { company } = await params;
+
+  return (
+    <div>
+      <OpportunitiesPage companySlug={company} />
+    </div>
+  );
 }
 
 export default page;

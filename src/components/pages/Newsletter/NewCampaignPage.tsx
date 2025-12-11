@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { EmailPreview } from "@/components/parts/EmailPreview";
-import { Article, Opportunity } from "@/types/main";
+import { Article } from "@/types/main";
+import { Opportunity } from "@/types/opportunity";
 
 export const AUDIENCE_OPTIONS = [
   {
@@ -87,19 +88,18 @@ const NewCampaignPage = () => {
   const TemplateSelector = () => (
     <div className="mb-6">
       <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center">
-        <Edit2 className="w-5 h-5 mr-2 text-purple-500" /> 1. Choose Template
-        Mode
+        <Edit2 className="w-5 h-5 mr-2 text-primary" /> 1. Choose Template Mode
       </h3>
       <div className="grid grid-cols-2 gap-4">
         <div
           onClick={() => updateConfig("templateMode", "structured")}
           className={`p-5 rounded-xl border-4 cursor-pointer transition duration-200 ${
             config.templateMode === "structured"
-              ? "border-purple-600 bg-purple-50 shadow-lg"
+              ? "border-primary bg-blue-50 shadow-lg"
               : "border-gray-200 bg-white hover:bg-gray-50"
           }`}
         >
-          <Mail className="w-6 h-6 mb-2 text-purple-600" />
+          <Mail className="w-6 h-6 mb-2 text-primary" />
           <p className="font-semibold text-gray-800">
             Structured Layout (HTML)
           </p>
@@ -111,11 +111,11 @@ const NewCampaignPage = () => {
           onClick={() => updateConfig("templateMode", "plain")}
           className={`p-5 rounded-xl border-4 cursor-pointer transition duration-200 ${
             config.templateMode === "plain"
-              ? "border-blue-600 bg-purple-50 shadow-lg"
+              ? "border-primary bg-blue-50 shadow-lg"
               : "border-gray-200 bg-white hover:bg-gray-50"
           }`}
         >
-          <Text className="w-6 h-6 mb-2 text-purple-600" />
+          <Text className="w-6 h-6 mb-2 text-primary" />
           <p className="font-semibold text-gray-800">Plain Text Mode</p>
           <p className="text-xs text-gray-500 mt-1">
             Simple, unformatted text for maximum deliverability and concise
@@ -267,13 +267,13 @@ const NewCampaignPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10">
       <div className="page">
         <Breadcrumb />
 
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-extrabold text-gray-900 flex items-center">
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
               <Mail className="w-7 h-7 mr-2 text-red-600" /> Create New Campaign
             </h1>
             <p className="text-gray-500 mt-1">

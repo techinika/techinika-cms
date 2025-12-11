@@ -1,4 +1,5 @@
-import { Article, Opportunity } from "@/types/main";
+import { Article } from "@/types/main";
+import { Opportunity } from "@/types/opportunity";
 import { BookOpen, Gift } from "lucide-react";
 import Link from "next/link";
 
@@ -75,7 +76,7 @@ export const EmailPreview = ({
       <div className="max-w-xl mx-auto my-8 border-8 border-gray-100 bg-white shadow-xl">
         {/* Email Header */}
         <div className="bg-primary text-white p-6 rounded-t-lg">
-          <h1 className="text-3xl font-extrabold">
+          <h1 className="text-3xl font-bold">
             {subject || "Untitled Campaign"}
           </h1>
           <p className="text-sm mt-1">From: {fromName || "Your Blog Team"}</p>

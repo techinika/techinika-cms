@@ -28,7 +28,7 @@ export const ArticleRow = ({ article }: { article: JoinedArticle }) => {
           {article.title}
         </h3>
         <p className="text-xs text-gray-500 mt-1">
-          <span className="font-medium text-blue-600">
+          <span className="font-medium text-primary">
             {article?.category?.name}
           </span>
           <span className="mx-2">•</span>
@@ -53,7 +53,7 @@ export const ArticleRow = ({ article }: { article: JoinedArticle }) => {
       </div>
 
       <div className="w-1/12 flex justify-end space-x-2 text-sm">
-        <button className="text-blue-600 hover:text-blue-800 font-medium">
+        <button className="text-primary hover:text-blue-800 font-medium">
           Edit
         </button>
         <button className="text-red-600 hover:text-red-800 font-medium">

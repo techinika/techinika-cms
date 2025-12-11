@@ -94,7 +94,7 @@ export const ResourceLibraryPage = () => {
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-8 bg-white rounded-xl">
       <Breadcrumb />
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">
         Resource Library
       </h1>
       <p className="text-gray-500 mb-6">

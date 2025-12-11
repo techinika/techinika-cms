@@ -1,89 +1,8 @@
 import {
-  Activity,
   Briefcase,
-  Building,
   UserPlus,
   Users,
-  Zap,
 } from "lucide-react";
-
-export const COMPANY_DETAIL_TILES = [
-  {
-    id: "opportunities",
-    title: "Opportunities Tied",
-    role: ["manager", "admin"],
-    icon: Activity,
-    color: "bg-sky-500",
-    stats: [
-      { label: "Open", value: "8" },
-      { label: "Closed (30d)", value: "4" },
-    ],
-    isGroup: false,
-  },
-  {
-    id: "users",
-    title: "Company Users",
-    role: ["manager", "admin"],
-    icon: Users,
-    color: "bg-fuchsia-500",
-    stats: [
-      { label: "Total", value: "15" },
-      { label: "Active (24h)", value: "11" },
-    ],
-    isGroup: false,
-  },
-  {
-    id: "events",
-    title: "Scheduled Events",
-    role: ["manager", "admin"],
-    icon: Zap,
-    color: "bg-orange-500",
-    stats: [
-      { label: "Upcoming", value: "3" },
-      { label: "Completed (Q)", value: "7" },
-    ],
-    isGroup: false,
-  },
-];
-
-export const MOCK_COMPANY_LIST = [
-  {
-    id: "company-techinika",
-    title: "Techinika Inc.",
-    role: ["manager", "admin"],
-    icon: Building,
-    color: "bg-indigo-600",
-    stats: [
-      { label: "Projects", value: "12" },
-      { label: "Employees", value: "120" },
-    ],
-    isGroup: true,
-  },
-  {
-    id: "company-innovate",
-    title: "Innovate Solutions",
-    role: ["admin"],
-    icon: Building,
-    color: "bg-purple-600",
-    stats: [
-      { label: "Projects", value: "4" },
-      { label: "Employees", value: "45" },
-    ],
-    isGroup: true,
-  },
-  {
-    id: "company-future",
-    title: "Future Ventures",
-    role: ["manager", "admin"],
-    icon: Building,
-    color: "bg-teal-600",
-    stats: [
-      { label: "Projects", value: "25" },
-      { label: "Employees", value: "300" },
-    ],
-    isGroup: true,
-  },
-];
 
 export const PATH_TITLE_MAP = {
   root: "Home",

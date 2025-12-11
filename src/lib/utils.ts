@@ -14,7 +14,7 @@ export function mapCompaniesToCards(companies: any[]): Tile[] {
     title: item?.company?.name,
     role: ["manager"],
     icon: Briefcase,
-    color: "bg-indigo-600",
+    color: "bg-primary",
     stats: [
       { label: "Events", value: item.events },
       { label: "Opportunities", value: item.opportunities },
@@ -22,3 +22,14 @@ export function mapCompaniesToCards(companies: any[]): Tile[] {
     children: true,
   }));
 }
+
+export const formatPlainTextToHTML = (text: string) => {
+  if (!text) return "";
+
+  const escaped = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  return escaped.replace(/\n/g, "<br/>");
+};

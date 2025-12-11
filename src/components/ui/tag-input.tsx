@@ -49,7 +49,7 @@ export const TagInput: React.FC<TagInputProps> = ({
         {tags.map((tag, index) => (
           <span
             key={index}
-            className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-full border border-blue-200"
+            className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-primary rounded-full border border-blue-200"
           >
             {tag}
           </span>

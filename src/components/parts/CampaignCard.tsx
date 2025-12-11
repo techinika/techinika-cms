@@ -43,7 +43,7 @@ export const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
       <div className="p-5 border-b flex justify-between items-start">
         <div>
           <h3
-            className="text-xl font-extrabold text-gray-900 mb-1 truncate"
+            className="text-xl font-bold text-gray-900 mb-1 truncate"
             title={name}
           >
             {name}
@@ -88,7 +88,7 @@ export const CampaignCard = ({ campaign }: { campaign: Campaign }) => {
               Icon={MousePointerClick}
               title="Click Rate"
               value={clickRate}
-              colorClass="text-purple-600"
+              colorClass="text-primary"
               isRate
             />
             <CampaignAnalyticsMetric

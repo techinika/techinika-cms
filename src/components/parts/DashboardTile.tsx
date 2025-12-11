@@ -36,7 +36,7 @@ export const DashboardTile = ({
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
         {stats.map((stat, index) => (
           <div key={index} className="flex flex-col">
-            <span className="text-2xl font-extrabold text-tech-dark">
+            <span className="text-2xl font-bold text-tech-dark">
               {stat.value}
             </span>
             <span className="text-xs text-gray-500 uppercase tracking-wider">

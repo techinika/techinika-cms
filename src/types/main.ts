@@ -1,3 +1,5 @@
+import { Opportunity } from "./opportunity";
+
 export type Article = {
   id: string;
   lang: string;
@@ -51,16 +53,6 @@ export interface TrendingTechnology {
   icon: string;
 }
 
-export interface FeaturedStartup {
-  id: string;
-  created_at: string;
-  lang: string;
-  name: string;
-  logo_url: string | null;
-  description: string;
-  learn_more_links: string[] | null;
-}
-
 export interface QuickByte {
   id: string;
   created_at: string;
@@ -78,24 +70,6 @@ export interface FeaturedVideo {
   url: string;
   description: string;
   learn_more_links: string[] | null;
-}
-
-export interface UserType {
-  id: string;
-  created_at: string;
-  lang: string;
-  name: string;
-  email: string;
-  title: string | null;
-  bio: string | null;
-  image_url: string | null;
-  external_link: string | null;
-  username: string | null;
-  location: string | null;
-  x_handle: string | null;
-  role: "admin" | "author" | "reader" | "manager";
-  github_handle: string | null;
-  linkedin_handle: string | null;
 }
 
 export interface Tile {
@@ -157,36 +131,6 @@ export interface Campaign {
   scheduled_for: string;
   target: string;
   content_structure: { articles: Article[]; opportunities: Opportunity[] };
-}
-
-export interface Opportunity {
-  id: string;
-  title: string;
-  slug: string;
-  type: "Job" | "Tender" | "Grant" | "Internship" | "Other";
-  organization?: string | null;
-  companyId?: string | null;
-  company: FeaturedStartup | null;
-  location: string;
-  salary?: string | null;
-  application_link?: string | null;
-  contact_email?: string | null;
-  tags?: string[];
-  description: string;
-  full_description: string;
-  requirements?: string | null;
-  benefits?: string | null;
-  status: string;
-  featured: boolean;
-  views: number;
-  created_at: string;
-  updated_at: string;
-  expires_at?: string;
-  seo_description?: string | null;
-  hints: {
-    bestCandidate: string;
-    winningTips: string[];
-  };
 }
 
 export interface Querry {

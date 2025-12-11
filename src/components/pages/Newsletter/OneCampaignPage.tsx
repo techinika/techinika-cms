@@ -52,7 +52,7 @@ const AnalyticsMetric = ({
 }) => (
   <div className="flex flex-col items-start p-4 bg-white rounded-xl shadow-lg border border-gray-100 transition hover:shadow-xl">
     <Icon className={`w-6 h-6 mb-2 ${colorClass}`} />
-    <span className="text-2xl font-extrabold text-gray-900 flex items-end">
+    <span className="text-2xl font-bold text-gray-900 flex items-end">
       {value.toLocaleString()}
       {unit && (
         <span className="text-base font-semibold ml-1 text-gray-600">
@@ -73,7 +73,9 @@ const CampaignDetailPage = () => {
     ? campaign.content_structure.articles.length
     : campaign?.content_structure?.articles ?? 0;
 
-  const opportunitiesCount = Array.isArray(campaign?.content_structure?.opportunities)
+  const opportunitiesCount = Array.isArray(
+    campaign?.content_structure?.opportunities
+  )
     ? campaign.content_structure.opportunities.length
     : campaign?.content_structure?.opportunities ?? 0;
 
@@ -117,7 +119,7 @@ const CampaignDetailPage = () => {
       return (
         <button
           onClick={handleDuplicate}
-          className={`${baseClasses} bg-purple-600 text-white hover:bg-purple-700`}
+          className={`${baseClasses} bg-primary text-white hover:bg-primary`}
         >
           <CornerUpLeft className="w-5 h-5 mr-2" /> Duplicate Campaign
         </button>
@@ -187,7 +189,7 @@ const CampaignDetailPage = () => {
               title="Click Rate"
               value={metrics.clickRate}
               unit="%"
-              colorClass="text-purple-600"
+              colorClass="text-primary"
             />
             <AnalyticsMetric
               Icon={CheckCircle}
@@ -222,7 +224,7 @@ const CampaignDetailPage = () => {
             <div className="flex items-center text-lg font-semibold text-gray-800">
               <Clock className="w-5 h-5 mr-3 text-primary" />
               Scheduled For:{" "}
-              <span className="ml-2 font-extrabold text-primary">
+              <span className="ml-2 font-bold text-primary">
                 {new Date(
                   campaign?.scheduled_for ?? new Date()
                 ).toLocaleString()}
@@ -265,7 +267,7 @@ const CampaignDetailPage = () => {
             <h4 className="text-sm font-light">
               From: {campaign?.fromName || "The Blog Team"}
             </h4>
-            <h1 className="text-2xl font-extrabold mt-1">
+            <h1 className="text-2xl font-bold mt-1">
               {campaign?.subject || "No Subject"}
             </h1>
           </div>
@@ -279,14 +281,17 @@ const CampaignDetailPage = () => {
             />
 
             {(() => {
-              const articlesCount = Array.isArray(campaign?.content_structure?.articles)
+              const articlesCount = Array.isArray(
+                campaign?.content_structure?.articles
+              )
                 ? campaign.content_structure.articles.length
                 : campaign?.content_structure?.articles ?? 0;
               if (articlesCount <= 0) return null;
               return (
                 <div className="mt-6 pt-4 border-t border-gray-100">
                   <h4 className="font-bold text-lg text-gray-900 mb-3 flex items-center">
-                    <BookOpen className="w-5 h-5 mr-2 text-primary" /> Latest Articles ({articlesCount} included)
+                    <BookOpen className="w-5 h-5 mr-2 text-primary" /> Latest
+                    Articles ({articlesCount} included)
                   </h4>
                   <div className="p-3 bg-blue-50 text-sm rounded">
                     Article Placeholder 1.
@@ -298,7 +303,8 @@ const CampaignDetailPage = () => {
             {opportunitiesCount > 0 && (
               <div className="mt-6 pt-4 border-t border-gray-100">
                 <h4 className="font-bold text-lg text-gray-900 mb-3 flex items-center">
-                  <Gift className="w-5 h-5 mr-2 text-yellow-600" /> Opportunities ({opportunitiesCount} included)
+                  <Gift className="w-5 h-5 mr-2 text-yellow-600" />{" "}
+                  Opportunities ({opportunitiesCount} included)
                 </h4>
                 <div className="p-3 bg-yellow-50 text-sm rounded">
                   Opportunity Placeholder 1.
@@ -316,7 +322,7 @@ const CampaignDetailPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-10 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-10">
       <div className="page">
         <Breadcrumb />
 
@@ -343,7 +349,7 @@ const CampaignDetailPage = () => {
         <div className="mb-8 flex justify-between items-center pb-4 border-b border-gray-200">
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-3xl font-extrabold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900">
                 {campaign?.name}
               </h1>
               <span
@@ -376,15 +382,16 @@ const CampaignDetailPage = () => {
             {/* Summary Card */}
             <div className="p-5 bg-white rounded-xl shadow-xl border border-gray-100 space-y-4">
               <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                <Layers className="w-5 h-5 mr-2 text-primary" /> Campaign Summary
+                <Layers className="w-5 h-5 mr-2 text-primary" /> Campaign
+                Summary
               </h2>
               <div className="flex items-center text-sm text-gray-700">
-                  <Settings className="w-4 h-4 mr-2 text-primary" />
-                  <span className="font-semibold">Content:</span>
-                  <span className="ml-2">
-                    {articlesCount} Articles, {opportunitiesCount} Opportunities
-                  </span>
-                </div>
+                <Settings className="w-4 h-4 mr-2 text-primary" />
+                <span className="font-semibold">Content:</span>
+                <span className="ml-2">
+                  {articlesCount} Articles, {opportunitiesCount} Opportunities
+                </span>
+              </div>
 
               {status === "sent" && (
                 <div className="flex items-center text-sm text-gray-700">

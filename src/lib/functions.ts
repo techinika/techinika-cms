@@ -38,7 +38,7 @@ export const getStatusStyles = (status: string) => {
     case "Completed":
       return "bg-green-100 text-green-700 border-green-400";
     case "Active":
-      return "bg-blue-100 text-blue-700 border-blue-400";
+      return "bg-blue-100 text-primary border-blue-400";
     case "Scheduled":
       return "bg-yellow-100 text-yellow-700 border-yellow-400";
     case "Draft":
@@ -46,4 +46,19 @@ export const getStatusStyles = (status: string) => {
     default:
       return "bg-gray-100 text-gray-700 border-gray-400";
   }
+};
+
+export const decodeSlug = (slug: string) => {
+  return slug
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim() // clean edges
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize each word
+};
+export const decodeUnderscoreSlug = (slug: string) => {
+  return slug
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ")
+    .trim() // clean edges
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize each word
 };
