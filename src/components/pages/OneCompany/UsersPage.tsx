@@ -16,200 +16,21 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-import { UserType } from "@/types/users";
+import { COMPANY_USER_ROLES, UserType } from "@/types/users";
+import { FilterSelect } from "@/components/ui/filter-select";
+import { FilterInput } from "@/components/ui/filter-input";
+import { StatCard } from "@/components/ui/stat-card";
+import { getCompanyUsers } from "@/supabase/CRUD/GET/getCompanyUsers";
+import { decodeUnderscoreSlug } from "../../../lib/functions";
+import { AddUserModal } from "@/components/parts/modal/NewCompanyUserModal";
+import { useRouter } from "next/navigation";
 
-const ROLES = ["Manager", "Employee"];
-const STATUSES = ["Active", "Inactive"];
+const STATUSES = ["confirmed", "pending_confirmation"];
 
-const StatCard = ({ title, value, icon: Icon, color }) => (
-  <div className="bg-white p-5 rounded-xl shadow-lg border border-gray-100 transition duration-300 hover:shadow-xl">
-    <div
-      className={`flex items-center justify-between p-2 rounded-full w-12 h-12 ${color} bg-opacity-10 mb-3`}
-    >
-      <Icon className={`w-6 h-6 ${color}`} />
-    </div>
-    <p className="text-3xl font-bold text-gray-800">{value}</p>
-    <p className="text-sm text-gray-500 mt-1">{title}</p>
-  </div>
-);
-
-const FilterInput = ({ label, value, onChange, icon: Icon, placeholder }) => (
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-600 mb-1">{label}</label>
-    <div className="relative">
-      <input
-        type="text"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150"
-      />
-      {Icon && (
-        <Icon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-      )}
-    </div>
-  </div>
-);
-
-const FilterSelect = ({ label, value, onChange, options }) => (
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-600 mb-1">{label}</label>
-    <select
-      value={value}
-      onChange={onChange}
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150 appearance-none"
-    >
-      <option value="">All</option>
-      {options.map((option) => (
-        <option key={option} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-  </div>
-);
-
-const AddUserModal = ({ isOpen, onClose, onAddUser, existingUsers }) => {
-  const availableUsers = MOCK_NEW_USER_OPTIONS.filter(
-    (opt) => !existingUsers.some((eu) => eu.email === opt.email)
-  );
-
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [selectedRole, setSelectedRole] = useState("Employee");
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedUserId("");
-      setSelectedRole("Employee");
-      setMessage("");
-    }
-  }, [isOpen]);
-
-  const handleSubmit = () => {
-    if (!selectedUserId) {
-      setMessage("Please select a user.");
-      return;
-    }
-
-    const userToAdd = availableUsers.find((u) => u.id === selectedUserId);
-    if (userToAdd) {
-      onAddUser({
-        name: userToAdd.name,
-        email: userToAdd.email,
-        role: selectedRole,
-      });
-      onClose();
-    } else {
-      setMessage("Selected user not found.");
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 transition-opacity">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg transform transition-all scale-100">
-        {/* Modal Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-            <User className="w-5 h-5 mr-2 text-blue-500" />
-            Add New Company User
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-
-        {/* Modal Body */}
-        <div className="p-6 space-y-4">
-          {message && (
-            <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-              {message}
-            </div>
-          )}
-
-          {availableUsers.length === 0 ? (
-            <div className="p-6 text-center bg-yellow-50 rounded-lg text-yellow-700">
-              No external users available to add.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {/* User Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Select User
-                </label>
-                <select
-                  value={selectedUserId}
-                  onChange={(e) => {
-                    setSelectedUserId(e.target.value);
-                    setMessage("");
-                  }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-base transition appearance-none"
-                >
-                  <option value="">-- Choose a user --</option>
-                  {availableUsers.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name} ({user.email})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Role Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Assign Role
-                </label>
-                <select
-                  value={selectedRole}
-                  onChange={(e) => {
-                    setSelectedRole(e.target.value);
-                    setMessage("");
-                  }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-base transition appearance-none"
-                >
-                  {ROLES.map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Modal Footer */}
-        <div className="p-6 border-t border-gray-100 flex justify-end space-x-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-150 font-medium"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={!selectedUserId || availableUsers.length === 0}
-            className="px-4 py-2 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary transition duration-150 disabled:opacity-50"
-          >
-            Confirm Add User
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const UsersPage = () => {
+export const UsersPage = ({ companySlug }: { companySlug: string }) => {
+  const router = useRouter();
   const [companyUsers, setCompanyUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userId, setUserId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -218,6 +39,20 @@ export const UsersPage = () => {
   const [nameEmailFilter, setNameEmailFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+
+  useEffect(() => {
+    async function loadUsers() {
+      setLoading(true);
+
+      const users = await getCompanyUsers(companySlug);
+
+      setCompanyUsers(users);
+      console.log(users);
+      setLoading(false);
+    }
+
+    loadUsers();
+  }, []);
 
   const filteredUsers = useMemo(() => {
     let filtered = companyUsers;
@@ -243,9 +78,9 @@ export const UsersPage = () => {
 
   const analytics = useMemo(() => {
     const total = companyUsers.length;
-    const managers = companyUsers.filter((u) => u.role === "Manager").length;
-    const employees = companyUsers.filter((u) => u.role === "Employee").length;
-    const active = companyUsers.filter((u) => u.status === "Active").length;
+    const managers = companyUsers.filter((u) => u.role === "manager").length;
+    const employees = companyUsers.filter((u) => u.role === "author").length;
+    const active = companyUsers.filter((u) => u.status === "confirmed").length;
 
     return {
       total,
@@ -255,7 +90,6 @@ export const UsersPage = () => {
     };
   }, [companyUsers]);
 
-  // Derived State: Paginated Users
   const paginatedUsers = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -264,53 +98,21 @@ export const UsersPage = () => {
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
-  const handleAddUser = async ({ name, email, role }) => {
-    if (!isAuthenticated || !userId || !db) {
-      console.error(
-        "Not authenticated or DB not initialized. Cannot add user."
-      );
-      return;
-    }
-
-    const newUser = {
-      name: name,
-      email: email,
-      role: role,
-      status: "Active", // Default status upon adding
-      joined_at: new Date().toISOString().split("T")[0],
-      createdAt: new Date(),
-      addedBy: userId,
-    };
-
-    try {
-      const appId =
-        typeof __app_id !== "undefined" ? __app_id : "default-app-id";
-      const collectionPath = `artifacts/${appId}/users/${userId}/company_users`;
-      const newDocRef = doc(collection(db, collectionPath));
-      await setDoc(newDocRef, newUser);
-      console.log("New user added successfully with ID:", newDocRef.id);
-    } catch (error) {
-      console.error("Error adding user document:", error);
-    }
+  const handleRowClick = (id: string) => {
+    router.push(`/${companySlug}/users/${id}`);
   };
 
-  const handleRowClick = (id) => {
-    console.log(`User ID ${id} clicked. Edit User Modal logic goes here.`);
-  };
-
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: React.SetStateAction<any>) => {
     if (page > 0 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
 
-  // --- Render Functions ---
-
   const renderTableContent = () => {
     if (loading) {
       return (
         <tr className="bg-gray-50">
-          <td colSpan="5" className="py-12 text-center text-primary">
+          <td colSpan={5} className="py-12 text-center text-primary">
             <Loader2 className="w-6 h-6 animate-spin inline-block mr-2" />
             Loading company users...
           </td>
@@ -321,7 +123,7 @@ export const UsersPage = () => {
     if (filteredUsers.length === 0) {
       return (
         <tr className="bg-white">
-          <td colSpan="5" className="py-12 text-center text-gray-500">
+          <td colSpan={5} className="py-12 text-center text-gray-500">
             <AlertTriangle className="w-5 h-5 inline-block mr-1" />
             No users match your current filters.
           </td>
@@ -333,7 +135,7 @@ export const UsersPage = () => {
       <tr
         key={user.id}
         className="group border-b border-gray-100 hover:bg-blue-50 transition duration-150 cursor-pointer"
-        onClick={() => handleRowClick(user.id)}
+        onClick={() => handleRowClick(user.username)}
       >
         <td className="px-6 py-4">
           <div className="flex items-center">
@@ -350,27 +152,27 @@ export const UsersPage = () => {
         <td className="px-6 py-4 text-sm text-gray-500">
           <span
             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-              user.role === "Manager"
-                ? "bg-blue-100 text-blue-800"
-                : "bg-blue-100 text-blue-800"
+              user.role === "manager"
+                ? "bg-blue-100 text-primary"
+                : "bg-blue-100 text-primary"
             }`}
           >
-            {user.role}
+            {decodeUnderscoreSlug(user.role)}
           </span>
         </td>
         <td className="px-6 py-4 text-sm text-gray-500">
           <span
             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-              user.status === "Active"
+              user.status === "confirmed"
                 ? "bg-green-100 text-green-800"
                 : "bg-red-100 text-red-800"
             }`}
           >
-            {user.status}
+            {decodeUnderscoreSlug(user.status)}
           </span>
         </td>
         <td className="px-6 py-4 text-sm text-gray-500">
-          Joined: {new Date(user.joined_at).toLocaleDateString()}
+          Joined: {new Date(user?.joined_at ?? new Date()).toLocaleDateString()}
         </td>
         <td className="px-6 py-4 text-right">
           <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition duration-150 ml-auto" />
@@ -381,32 +183,26 @@ export const UsersPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Modal */}
+      <div className="max-w-6xl mx-auto">
         <AddUserModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onAddUser={handleAddUser}
-          existingUsers={companyUsers}
+          slug={companySlug}
         />
 
-        {/* Breadcrumb */}
         <Breadcrumb />
 
-        {/* Header & New Button */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900">User Management</h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center px-4 py-2 bg-primary text-white font-semibold rounded-xl shadow-md hover:bg-primary transition duration-300 transform hover:scale-[1.02]"
-            disabled={!isAuthenticated}
+            className="flex items-center px-4 py-2 bg-primary text-white font-semibold rounded shadow-md hover:bg-primary transition duration-300 transform hover:scale-[1.02]"
           >
             <Plus className="w-5 h-5 mr-2" />
             Add New User
           </button>
         </div>
 
-        {/* Analytics Section */}
         <h2 className="text-xl font-semibold text-gray-700 mb-4">
           User Statistics
         </h2>
@@ -437,12 +233,10 @@ export const UsersPage = () => {
           />
         </div>
 
-        {/* Filter and Table Section */}
         <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-          {/* Filters */}
           <div className="flex flex-wrap items-end gap-4 mb-6 pb-6 border-b border-gray-100">
             <Filter className="w-5 h-5 text-gray-400 mr-2 self-center hidden sm:block" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex-grow">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 grow">
               <FilterInput
                 label="Search Name or Email"
                 placeholder="e.g., Alice or @company.com"
@@ -460,7 +254,7 @@ export const UsersPage = () => {
                   setRoleFilter(e.target.value);
                   setCurrentPage(1);
                 }}
-                options={ROLES}
+                options={COMPANY_USER_ROLES}
               />
               <FilterSelect
                 label="Filter by Status"
@@ -474,7 +268,6 @@ export const UsersPage = () => {
             </div>
           </div>
 
-          {/* Table */}
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -502,7 +295,6 @@ export const UsersPage = () => {
             </table>
           </div>
 
-          {/* Pagination */}
           <div className="mt-6 flex justify-between items-center">
             <div className="text-sm text-gray-600">
               Showing{" "}
@@ -524,7 +316,6 @@ export const UsersPage = () => {
               >
                 Previous
               </button>
-              {/* Simple Page Indicator */}
               <span className="px-3 py-1 bg-blue-50 text-primary rounded-lg text-sm font-medium">
                 {currentPage} / {totalPages}
               </span>

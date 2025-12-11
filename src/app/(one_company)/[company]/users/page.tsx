@@ -1,10 +1,11 @@
 import { UsersPage } from "@/components/pages/OneCompany/UsersPage";
-import React from "react";
 
-function page() {
+async function page({ params }: { params: Promise<{ company: string }> }) {
+  const { company } = await params;
+
   return (
     <div>
-      <UsersPage />
+      <UsersPage companySlug={company} />
     </div>
   );
 }

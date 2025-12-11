@@ -31,3 +31,5 @@ export interface Company {
   tags: string;
   slug: string;
 }
+
+export const COMPANY_STATUSES = ["Active", "Hiring", "Dormant", "Acquired"];

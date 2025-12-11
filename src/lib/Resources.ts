@@ -2,7 +2,6 @@ import {
   Briefcase,
   UserPlus,
   Users,
-  Zap,
 } from "lucide-react";
 
 export const PATH_TITLE_MAP = {

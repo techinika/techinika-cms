@@ -30,7 +30,7 @@ export interface Opportunity {
     bestCandidate: string;
     winningTips: string[];
   };
-  location_type: "In-Person" | "Remote" | "Hybrid";
+  location_type: "In-Person" | "Remote" | "Hybrid" | string;
   country?: string;
   employment_type?: string;
   application_type?: string;

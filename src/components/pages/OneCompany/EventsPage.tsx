@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Calendar,
   Users,
@@ -10,65 +10,17 @@ import {
   Plus,
   Clock,
   Loader2,
-  Database,
   AlertTriangle,
   ArrowRight,
   TrendingUp,
 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-
-const MOCK_EVENTS = [
-  {
-    id: "e1",
-    name: "Annual Tech Summit 2026",
-    type: "Conference",
-    location: "Virtual",
-    capacity: 1000,
-    attendees: 850,
-    date: "2026-04-20T09:00:00",
-    status: "Upcoming",
-  },
-  {
-    id: "e2",
-    name: "Q1 Sales Training Workshop",
-    type: "Workshop",
-    location: "New York",
-    capacity: 50,
-    attendees: 48,
-    date: "2025-12-15T14:00:00",
-    status: "Completed",
-  },
-  {
-    id: "e3",
-    name: "Client Appreciation Mixer",
-    type: "Networking",
-    location: "London",
-    capacity: 150,
-    attendees: 10,
-    date: "2026-01-10T18:30:00",
-    status: "Draft",
-  },
-  {
-    id: "e4",
-    name: "Product Demo Webinar",
-    type: "Webinar",
-    location: "Virtual",
-    capacity: 500,
-    attendees: 401,
-    date: "2025-11-28T11:00:00",
-    status: "Completed",
-  },
-  {
-    id: "e5",
-    name: "Team Building Day",
-    type: "Internal",
-    location: "HQ Office",
-    capacity: 80,
-    attendees: 0,
-    date: "2026-05-01T10:00:00",
-    status: "Upcoming",
-  },
-];
+import { useAuth } from "@/lib/AuthContext";
+import { FilterInput } from "@/components/ui/filter-input";
+import { FilterSelect } from "@/components/ui/filter-select";
+import { StatCard } from "@/components/ui/stat-card";
+import { useRouter } from "next/navigation";
+import { EventInterface } from "@/types/event";
 
 const EVENT_TYPES = [
   "Conference",
@@ -77,123 +29,60 @@ const EVENT_TYPES = [
   "Webinar",
   "Internal",
 ];
+
 const EVENT_STATUSES = ["Upcoming", "Completed", "Draft", "Cancelled"];
 
-const StatCard = ({ title, value, icon: Icon, color }) => (
-  <div className="bg-white p-5 rounded-xl shadow-lg border border-gray-100 transition duration-300 hover:shadow-xl">
-    <div
-      className={`flex items-center justify-between p-2 rounded-full w-12 h-12 ${color} bg-opacity-10 mb-3`}
-    >
-      <Icon className={`w-6 h-6 ${color}`} />
-    </div>
-    <p className="text-3xl font-bold text-gray-800">{value}</p>
-    <p className="text-sm text-gray-500 mt-1">{title}</p>
-  </div>
-);
-
-const FilterInput = ({
-  label,
-  value,
-  onChange,
-  type = "text",
-  icon: Icon,
-  placeholder,
-}) => (
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-600 mb-1">{label}</label>
-    <div className="relative">
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150"
-      />
-      {Icon && (
-        <Icon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-      )}
-    </div>
-  </div>
-);
-
-const FilterSelect = ({ label, value, onChange, options }) => (
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-600 mb-1">{label}</label>
-    <select
-      value={value}
-      onChange={onChange}
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150 appearance-none"
-    >
-      <option value="">All</option>
-      {options.map((option) => (
-        <option key={option} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-  </div>
-);
-
-// --- Main Component ---
-
-export const EventsPage = () => {
-  const [events, setEvents] = useState([]);
+export const EventsPage = ({ companySlug }: { companySlug: string }) => {
+  const auth = useAuth();
+  const router = useRouter();
+  const [events, setEvents] = useState<EventInterface[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // Filter states
   const [nameFilter, setNameFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [dateFilter, setDateFilter] = useState(""); // YYYY-MM-DD
 
-  // Derived State: Filtered Events
   const filteredEvents = useMemo(() => {
     let filtered = events;
 
-    // 1. Name Filter
     if (nameFilter) {
       filtered = filtered.filter((event) =>
-        event.name.toLowerCase().includes(nameFilter.toLowerCase())
+        event.title.toLowerCase().includes(nameFilter.toLowerCase())
       );
     }
 
-    // 2. Status Filter
     if (statusFilter) {
       filtered = filtered.filter((event) => event.status === statusFilter);
     }
 
-    // 3. Type Filter
     if (typeFilter) {
-      filtered = filtered.filter((event) => event.type === typeFilter);
+      filtered = filtered.filter((event) => event.format === typeFilter);
     }
 
     if (dateFilter) {
       const filterDate = new Date(dateFilter).getTime();
       filtered = filtered.filter((event) => {
-        const eventStartDate = new Date(event.date).getTime();
-        // Check if event starts on or after the filter date
+        const eventStartDate = new Date(event.start_date).getTime();
         return eventStartDate >= filterDate;
       });
     }
 
-    // Sort by event date (closest upcoming first)
-    return filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+    return filtered.sort(
+      (a, b) =>
+        new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+    );
   }, [events, nameFilter, statusFilter, typeFilter, dateFilter]);
 
-  // Derived State: Analytics
   const analytics = useMemo(() => {
     const total = events.length;
     const upcoming = events.filter((e) => e.status === "Upcoming").length;
-    const completed = events.filter((e) => e.status === "Completed").length;
+    const completed = events.filter((e) => e.status === "Happening").length;
     const totalCapacity = events.reduce((sum, e) => sum + (e.capacity || 0), 0);
-    const totalAttendees = events.reduce(
-      (sum, e) => sum + (e.attendees || 0),
-      0
-    );
+    const totalAttendees = events.reduce((sum, e) => sum + 0, 0);
     const overallFillRate =
       totalCapacity > 0
         ? `${Math.round((totalAttendees / totalCapacity) * 100)}%`
@@ -208,7 +97,6 @@ export const EventsPage = () => {
     };
   }, [events]);
 
-  // Derived State: Paginated Events
   const paginatedEvents = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -218,13 +106,6 @@ export const EventsPage = () => {
   const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
 
   const handleNewEvent = async () => {
-    if (!isAuthenticated || !userId || !db) {
-      console.error(
-        "Not authenticated or DB not initialized. Cannot add event."
-      );
-      return;
-    }
-
     const now = new Date();
     const futureDate = new Date(now.setMonth(now.getMonth() + 1)); // One month from now
 
@@ -236,31 +117,22 @@ export const EventsPage = () => {
       capacity: 50,
       attendees: 0,
       date: futureDate.toISOString().substring(0, 16), // YYYY-MM-DDTHH:MM
-      createdAt: serverTimestamp(),
+      createdAt: new Date(),
       createdBy: userId,
     };
 
     try {
-      const appId =
-        typeof __app_id !== "undefined" ? __app_id : "default-app-id";
-      const collectionPath = `artifacts/${appId}/users/${userId}/events`;
-      const newDocRef = doc(collection(db, collectionPath));
-      await setDoc(newDocRef, newEvent);
-      console.log("New event added successfully with ID:", newDocRef.id);
+      console.log("New event added successfully with");
     } catch (error) {
       console.error("Error adding document:", error);
-      // Show custom alert message instead of console.error in production
     }
   };
 
-  const handleRowClick = (id) => {
-    console.log(
-      `Event ID ${id} clicked. Navigation/Modal view logic goes here.`
-    );
-    // In a real app, this would trigger a modal or routing to /events/{id}
+  const handleRowClick = (id: string) => {
+    router.push(`${companySlug}/events/${id}`);
   };
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: React.SetStateAction<any>) => {
     if (page > 0 && page <= totalPages) {
       setCurrentPage(page);
     }
@@ -270,7 +142,7 @@ export const EventsPage = () => {
     if (loading) {
       return (
         <tr className="bg-gray-50">
-          <td colSpan="7" className="py-12 text-center text-primary">
+          <td colSpan={7} className="py-12 text-center text-primary">
             <Loader2 className="w-6 h-6 animate-spin inline-block mr-2" />
             Loading events...
           </td>
@@ -281,7 +153,7 @@ export const EventsPage = () => {
     if (filteredEvents.length === 0) {
       return (
         <tr className="bg-white">
-          <td colSpan="7" className="py-12 text-center text-gray-500">
+          <td colSpan={7} className="py-12 text-center text-gray-500">
             <AlertTriangle className="w-5 h-5 inline-block mr-1" />
             No events match your current filters.
           </td>
@@ -290,11 +162,9 @@ export const EventsPage = () => {
     }
 
     return paginatedEvents.map((event) => {
-      const eventDate = new Date(event.date);
+      const eventDate = new Date(event?.start_date);
       const fillRate =
-        event.capacity > 0
-          ? Math.round((event.attendees / event.capacity) * 100)
-          : 0;
+        event.capacity > 0 ? Math.round(event.capacity * 100) : 0;
       const fillColor =
         fillRate > 90
           ? "bg-red-500"
@@ -309,17 +179,17 @@ export const EventsPage = () => {
           onClick={() => handleRowClick(event.id)}
         >
           <td className="px-6 py-4 text-sm font-medium text-gray-900 truncate max-w-xs">
-            {event.name}
+            {event?.title}
           </td>
           <td className="px-6 py-4 text-sm text-gray-500">
             <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-              {event.type}
+              {event?.format}
             </span>
           </td>
           <td className="px-6 py-4 text-sm text-gray-500">
             <div className="flex items-center">
               <MapPin className="w-4 h-4 mr-1 text-gray-400" />
-              {event.location}
+              {event?.location}
             </div>
           </td>
           <td className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
@@ -332,7 +202,6 @@ export const EventsPage = () => {
             </span>
           </td>
           <td className="px-6 py-4 text-sm font-semibold text-gray-700">
-            {event.attendees.toLocaleString()} /{" "}
             {event.capacity.toLocaleString()}
             <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
               <div
@@ -346,7 +215,7 @@ export const EventsPage = () => {
               className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
                 event.status === "Upcoming"
                   ? "bg-blue-100 text-blue-800"
-                  : event.status === "Completed"
+                  : event.status === "Happening"
                   ? "bg-green-100 text-green-800"
                   : "bg-red-100 text-red-800"
               }`}
@@ -364,26 +233,22 @@ export const EventsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Breadcrumb */}
+      <div className="max-w-6xl mx-auto">
         <Breadcrumb />
 
-        {/* Header & New Button */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900">
             Events Management
           </h1>
           <button
             onClick={handleNewEvent}
-            className="flex items-center px-4 py-2 bg-primary text-white font-semibold rounded-xl shadow-md hover:bg-primary transition duration-300 transform hover:scale-[1.02]"
-            disabled={!isAuthenticated}
+            className="flex items-center px-4 py-2 bg-primary text-white font-semibold rounded shadow-md hover:bg-primary transition duration-300 transform hover:scale-[1.02]"
           >
             <Plus className="w-5 h-5 mr-2" />
             New Event
           </button>
         </div>
 
-        {/* Analytics Section */}
         <h2 className="text-xl font-semibold text-gray-700 mb-4">
           Event Analytics
         </h2>
@@ -414,12 +279,10 @@ export const EventsPage = () => {
           />
         </div>
 
-        {/* Filter and Table Section */}
         <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-          {/* Filters */}
           <div className="flex flex-wrap items-end gap-4 mb-6 pb-6 border-b border-gray-100">
             <Filter className="w-5 h-5 text-gray-400 mr-2 self-center hidden sm:block" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 flex-grow">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 grow">
               <FilterInput
                 label="Search by Name"
                 placeholder="e.g., Summit"

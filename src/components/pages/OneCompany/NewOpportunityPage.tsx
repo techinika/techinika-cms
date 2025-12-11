@@ -38,13 +38,15 @@ import { CheckboxToggle } from "@/components/ui/checkbox-toggle";
 import { MarkdownEditor } from "@/components/ui/markdown-editor";
 import { SelectField } from "@/components/ui/select-field";
 import { InputField } from "@/components/ui/input-field";
+import { createOpportunity } from "@/supabase/CRUD/INSERT/addOpportunity";
+import CopyLinkModal from "@/components/parts/modal/CopyLinkModal";
 
 export const NewOpportunityPage = ({
   companySlug,
 }: {
   companySlug: string;
 }) => {
-  const [formData, setFormData] = useState<Opportunity>({
+  const initialForm = {
     id: Date.now().toString(),
     title: "",
     slug: "",
@@ -55,7 +57,7 @@ export const NewOpportunityPage = ({
     employment_type: EMPLOYMENT_TYPES[0],
     salary: "",
     application_type: "Internal", // Internal or External (custom field for UI logic)
-    application_link: "",
+    application_link: "apply",
     contact_email: "",
     tags: "",
     views: 0,
@@ -72,10 +74,14 @@ export const NewOpportunityPage = ({
       bestCandidate: "",
       winningTips: [],
     },
-  });
+  };
+  const [formData, setFormData] = useState<Opportunity>(initialForm);
 
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ type: "", text: "" });
+  const [showModal, setShowModal] = useState(false);
+  const [shareLink, setShareLink] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const handleChange = (e: { target: any }) => {
     const { name, value, type, checked } = e.target;
@@ -99,38 +105,9 @@ export const NewOpportunityPage = ({
     setStatusMessage({ type: "", text: "" });
   };
 
-  const validateForm = () => {
-    const requiredFields = [
-      "title",
-      "type",
-      "location",
-      "description",
-      "full_description",
-      "status",
-      "employment_type",
-      "location_type",
-    ];
-
-    if (
-      formData.application_type === "External" &&
-      !formData.application_link
-    ) {
-      requiredFields.push("application_link");
-    }
-
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        return `Field required: ${field.replace("_", " ").toUpperCase()}`;
-      }
-    }
-
-    return null;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
     if (
       !formData.title ||
       !formData.description ||
@@ -146,30 +123,28 @@ export const NewOpportunityPage = ({
     setLoading(true);
     setStatusMessage({ type: "", text: "" });
 
-    // prepare payload
-    const payload: OpportunityInsert = {
+    const payload = {
       title: formData.title,
       slug: formData.slug || generateSlug(formData.title),
       type: formData.type,
       location: formData.location,
-      work_mode: formData.work_mode,
+      work_mode: formData.location_type,
       country: formData.country || undefined,
       employment_type: formData.employment_type,
       salary: formData.salary || undefined,
       application_type: formData.application_type,
-      application_link: formData.application_link || undefined,
+      application_link: formData.application_link || "apply",
       contact_email: formData.contact_email || undefined,
       tags: formData.tags || undefined,
       description: formData.description,
       full_description: formData.full_description,
       requirements: formData.requirements || undefined,
       benefits: formData.benefits || undefined,
-      status: formData.status,
+      status: formData.status?.toLowerCase(),
       featured: !!formData.featured,
       expires_at: formData.expires_at || undefined,
       seo_description: formData.seo_description || undefined,
       lang: formData.lang || "english",
-      // hints omitted - your table already supports it
     };
 
     try {
@@ -183,14 +158,15 @@ export const NewOpportunityPage = ({
           }`,
         });
       } else {
+        const link = `${process.env.NEXT_PUBLIC_MAIN_APP_URL}/opportunities/${result.data.slug}`;
+        setShareLink(link);
+        setShowModal(true);
         setStatusMessage({
           type: "success",
           text: `Opportunity "${result.data.title}" created successfully!`,
         });
-        // reset form
+
         setFormData(initialForm);
-        // optionally redirect to the opportunity page
-        // router.push(`/company/${companySlug}/opportunities/${result.data.slug}`);
       }
     } catch (err: any) {
       console.error(err);
@@ -203,8 +179,23 @@ export const NewOpportunityPage = ({
     }
   };
 
+  const copyToClipboard = async () => {
+    await navigator.clipboard.writeText(shareLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+      {showModal && (
+        <CopyLinkModal
+          setShowModal={setShowModal}
+          copied={copied}
+          copyToClipboard={copyToClipboard}
+          shareLink={shareLink}
+        />
+      )}
+
       <div className="max-w-6xl mx-auto">
         <Breadcrumb />
         <div className="mb-10 border-b-2 pb-6 flex justify-between items-center">

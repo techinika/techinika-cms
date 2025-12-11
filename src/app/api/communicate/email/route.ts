@@ -46,7 +46,7 @@ export async function POST(req: Request) {
             <div style="padding:20px; color:#374151; line-height:1.6;">
               <p>Dear <strong>${name}</strong>,</p>
 
-              <p>${message}</p>
+              <div>${message}</div>
 
               <p>Best regards,<br />${company} Team</p>
             </div>

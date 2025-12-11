@@ -50,8 +50,15 @@ export const getStatusStyles = (status: string) => {
 
 export const decodeSlug = (slug: string) => {
   return slug
-    .replace(/-/g, " ") // replace dashes with spaces
-    .replace(/\s+/g, " ") // normalize spacing
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim() // clean edges
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize each word
+};
+export const decodeUnderscoreSlug = (slug: string) => {
+  return slug
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ")
     .trim() // clean edges
     .replace(/\b\w/g, (c) => c.toUpperCase()); // capitalize each word
 };
