@@ -1,10 +1,12 @@
 import { EventsPage } from "@/components/pages/OneCompany/EventsPage";
 import React from "react";
 
-function page() {
+async function page({ params }: { params: Promise<{ company: string }> }) {
+  const { company } = await params;
+
   return (
     <div>
-      <EventsPage />
+      <EventsPage companySlug={company} />
     </div>
   );
 }
